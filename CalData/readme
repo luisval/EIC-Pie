@@ -1,0 +1,10 @@
+Building The Package
+cd src
+mkdir build
+cd build
+../autogen.sh --prefix=$MYINSTALL
+make
+make install
+
+Runing the macro
+The macro is located in /macro/FG4EIC_CalData.C, and is the default Fun4All sPhenix macro considering the CalData package.
