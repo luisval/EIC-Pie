@@ -549,9 +549,31 @@ int FG4EIC_CalData(
   //-----
 
   se->End();
+   cout << "                               /~\\                       "<< endl;                                                                                                                                        
+   cout << "                              |oo )     This is typical!"<< endl;                                                                                                                                      
+   cout << "                               \\=/_                  "<< endl;                                                                                                                                         
+   cout << "              ___         #  /  _  \\   #  "<<endl;                                                                                                                                                     
+   cout << "             /() \\       \\//|/.\\|\\//  "<<endl;                                                                                                                                                      
+   cout << "           _|_____|_       \\/  \\_/ \\  "<<endl;                                                                                                                                                       
+   cout << "          | | === | |         |\\ /|     "<<endl;                                                                                                                                                       
+   cout << "          |_|  O  |_|         \\_ _/     "<<endl;                                                                                                                                                       
+   cout << "           ||  O  ||          | | |       "<<endl;                                                                                                                                                         
+   cout <<"          ||__*__||          | | |      "<<endl;                                                                                                                                                       
+   cout <<"          |~ \\___// ~|        []|[]     "<<endl;                                                                                                                                                        
+   cout <<"         /=\\ //=\\ /=\\       | | |   "<<endl;                                                                                                                                                          
+    cout <<"__________[_]_[_]_[_]________/_]_[_\\____"<<endl;                                                                                                                             
+                                                                                                                          
+
+   cout << "-----------------------------------------" << endl;
+   cout << "-------------------------------------------------" << endl;
+   cout << "-------------------------------------------------" << endl;
    cout << "-------------------------------------------------" << endl;
    cout << "Se acabó. End of the simulation. Gracias." << endl;
    cout << "-------------------------------------------------" << endl;
+//R2D2 and C3PO from telnet towel.blinkenlights.nl
+
+
+
 
   std::cout << "All done" << std::endl;
   delete se;
