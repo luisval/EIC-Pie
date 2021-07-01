@@ -6,5 +6,5 @@ cd build
 make
 make install
 
-Runing the macro
+Running the macro
 The macro is located in /macro/FG4EIC_CalData.C, and is the default Fun4All sPhenix macro considering the CalData package.
