@@ -2,7 +2,7 @@
 //////This macro is an adaptation of AnaTutorial ( https://github.com/ECCE-EIC/tutorials/tree/master/AnaTutorial)
 //////created to save the root files with the EMCal and HCal information.
 //////Framework Fun4All G4
-//////Author: Luis Val
+//////2nd Author: Luis Val
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "CalData.h"
