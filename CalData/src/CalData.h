@@ -227,6 +227,19 @@ class CalData : public SubsysReco
   std::vector<double> m_cluseta_HCalOUT;
   std::vector<double> m_cluspt_HCalOUT;
 
+  //EMCal extrapolation
+  std::vector<double> CEMC_x;
+  std::vector<double> CEMC_y;
+  std::vector<double> CEMC_z;
+  std::vector<double> m_tr_CEMC_eta;
+  std::vector<double> m_tr_CEMC_phi;
+  std::vector<double> m_tr_CEMC_x;
+  std::vector<double> m_tr_CEMC_y;
+  std::vector<double> m_tr_CEMC_z;
+  std::vector<double> m_tr_CEMC_px;
+  std::vector<double> m_tr_CEMC_py;
+  std::vector<double> m_tr_CEMC_pz;
+
 };
 
 #endif

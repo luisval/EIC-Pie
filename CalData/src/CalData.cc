@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////This macro is an adaptation of AnaTutorial ( https://github.com/ECCE-EIC/tutorials/tree/master/AnaTutorial)
 //////created to save the root files with the EMCal and HCal information.
 //////Framework Fun4All G4 EIC
@@ -191,6 +191,22 @@ int CalData::End(PHCompositeNode *topNode)
   {
     cout << "Finished CalData analysis package" << endl;
   }
+
+    ////////////////////////////////////////////////////////////////////////////////////
+ cout << "                               /~\\                       "<< endl;                                                                                                                                        
+   cout << "                              |oo )     This is typical!"<< endl;                                                                                                                                      
+   cout << "                               \\=/_                  "<< endl;                                                                                                                                         
+   cout << "              ___         #  /  _  \\   #  "<<endl;                                                                                                                                                     
+   cout << "             /() \\       \\//|/.\\|\\//  "<<endl;                                                                                                                                                      
+   cout << "           _|_____|_       \\/  \\_/ \\  "<<endl;                                                                                                                                                       
+   cout << "          | | === | |         |\\ /|     "<<endl;                                                                                                                                                       
+   cout << "          |_|  O  |_|         \\_ _/     "<<endl;                                                                                                                                                       
+   cout << "           ||  O  ||          | | |       "<<endl;                                                                                                                                                         
+   cout <<"          ||__*__||          | | |      "<<endl;                                                                                                                                                       
+   cout <<"          |~ \\___// ~|        []|[]     "<<endl;                                                                                                                                                        
+   cout <<"         /=\\ //=\\ /=\\       | | |   "<<endl;                                                                                                                                                          
+    cout <<"__________[_]_[_]_[_]________/_]_[_\\____"<<endl;   
+ //////////////////////////////////////////////////////////////////////////////////////   
 
   return 0;
 }
@@ -391,6 +407,16 @@ m_cluseta_HCalOUT.clear();
 m_clusphi_HCalOUT.clear(); 
 m_cluspt_HCalOUT.clear();
 
+//EMCal extrapolation
+   m_tr_CEMC_eta.clear();
+   m_tr_CEMC_phi.clear();
+   m_tr_CEMC_x.clear();
+   m_tr_CEMC_y.clear();
+   m_tr_CEMC_z.clear();
+   m_tr_CEMC_px.clear();
+   m_tr_CEMC_py.clear();
+   m_tr_CEMC_pz.clear();
+  
 /////////////////
 
   PHG4TruthInfoContainer *truthinfo = findNode::getClass<PHG4TruthInfoContainer>(topNode, "G4TruthInfo");
@@ -424,6 +450,8 @@ m_cluspt_HCalOUT.clear();
     
   SvtxTrackMap *trackmap = findNode::getClass<SvtxTrackMap>(topNode, "TrackMap");
 
+   // if(trackmap) cout << "trackmap size" << trackmap->size() << endl;
+
   if (!trackmap){
      cout << PHWHERE
           << "SvtxTrackMap node is missing, can't collect tracks"
@@ -455,8 +483,9 @@ m_cluspt_HCalOUT.clear();
   for (SvtxTrackMap::Iter iter = trackmap->begin(); iter != trackmap->end(); ++iter){
 
     SvtxTrack *track = iter->second;
-    
+   
     if(track) cout << "track px " << track->get_px() << endl; 
+
     /*for (SvtxTrack::ConstStateIter trkstates = track->begin_states(); trkstates != track->end_states(); ++trkstates){
     	cout << __PRETTY_FUNCTION__ << " checking " << trkstates->second->get_name() << endl;
 	map<string, unsigned int>::const_iterator iter = m_ProjectionNameMap.find(trkstates->second->get_name());
@@ -485,6 +514,39 @@ m_cluspt_HCalOUT.clear();
     m_tr_x   .push_back(track->get_x());
     m_tr_y   .push_back(track->get_y());
     m_tr_z   .push_back(track->get_z());
+
+ ///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////Tracks calorimeters extrapolation////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+ /////////////////////////CEMCal tracks extrapolation///////////////////////////
+/*
+    for (SvtxTrack::ConstStateIter trkstates = track->begin_states(); trkstates != track->end_states(); ++trkstates){
+
+   //  if(trkstates->second->get_name() == "CLUSTER_CEMC"){
+ 
+     if(trkstates->second->get_name() == "CEMC"){
+
+
+      double CEMC_x = trkstates->second->get_pos(0);
+      double CEMC_y = trkstates->second->get_pos(1);
+      double CEMC_z = trkstates->second->get_pos(2);
+ 
+      m_tr_CEMC_eta .push_back(asinh(CEMC_z / sqrt(CEMC_x * CEMC_x + CEMC_y * CEMC_y)));
+      m_tr_CEMC_phi .push_back(atan2(CEMC_y, CEMC_x));
+ 
+      m_tr_CEMC_x .push_back(trkstates->second->get_pos(0));
+      m_tr_CEMC_y .push_back(trkstates->second->get_pos(1));
+      m_tr_CEMC_z .push_back(trkstates->second->get_pos(2));
+      m_tr_CEMC_px .push_back(trkstates->second->get_mom(0));
+      m_tr_CEMC_py .push_back(trkstates->second->get_mom(1));
+      m_tr_CEMC_pz .push_back(trkstates->second->get_mom(2));
+
+          cout << "CEMC extrapolation " << endl; 
+     }
+  }  
+ }*/ 
+/////////////////////////////////////////////////////////////////////////////////////// 
 
   }
 
@@ -561,6 +623,7 @@ m_cluspt_HCalOUT.clear();
 
   }
 
+ 
 //////////////////////////////////////EMCal//////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -628,7 +691,6 @@ m_cluspt_HCalOUT.clear();
                    
 //////////////////////////////////////////HCalIN end///////////////////////////////////////////////
 
-
 //////////////////////////////////////////HCalOut//////////////////////////////////////////////////
 
 RawClusterContainer *clusters_hcalout = findNode::getClass<RawClusterContainer>(topNode, "CLUSTER_HCALOUT");
@@ -680,16 +742,47 @@ RawClusterContainer *clusters_hcalout = findNode::getClass<RawClusterContainer>(
      m_clusphi_HCalOUT .push_back(E_vec_cluster_HCOUT.getPhi());
      m_cluspt_HCalOUT .push_back(E_vec_cluster_HCOUT.perp());
   }
-
-
-///////////////////////////////////////////HCalOut end/////////////////////////////////////////////////
-
+///////////////////////////////////////////HCalOutend/////////////////////////////////////////////////
 
 ////////////////////////////////////////////HCalend/////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////Clusters caloirimeters end///////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////Tracks calorimeters extrapolation////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
+//////////////////////////CEMCal tracks extrapolation///////////////////////////
+  
+for (SvtxTrackMap::Iter iter = trackmap->begin(); iter != trackmap->end(); ++iter){
+ 
+    SvtxTrack *track = iter->second;
+
+    for (SvtxTrack::ConstStateIter trkstates = track->begin_states(); trkstates != track->end_states(); ++trkstates){
+       
+        cout << "trkstates: " << trkstates->second->get_name() << endl;
+   
+      if(trkstates->second->get_name() == "CEMC"){
+ 
+      double CEMC_x = trkstates->second->get_pos(0);
+      double CEMC_y = trkstates->second->get_pos(1);
+      double CEMC_z = trkstates->second->get_pos(2);
+ 
+      m_tr_CEMC_eta .push_back(asinh(CEMC_z / sqrt(CEMC_x * CEMC_x + CEMC_y * CEMC_y)));
+      m_tr_CEMC_phi .push_back(atan2(CEMC_y, CEMC_x));
+ 
+      m_tr_CEMC_x .push_back(trkstates->second->get_pos(0));
+      m_tr_CEMC_y .push_back(trkstates->second->get_pos(1));
+      m_tr_CEMC_z .push_back(trkstates->second->get_pos(2));
+      m_tr_CEMC_px .push_back(trkstates->second->get_mom(0));
+      m_tr_CEMC_py .push_back(trkstates->second->get_mom(1));
+      m_tr_CEMC_pz .push_back(trkstates->second->get_mom(2));
+
+         // cout << "CEMC extrapolation " << endl; 
+     }   
+   }
+}
 
 m_clustertree->Fill();
 m_tracktree->Fill();
@@ -739,7 +832,18 @@ m_cluseta_HCalOUT.clear();
 m_clusphi_HCalOUT.clear(); 
 m_cluspt_HCalOUT.clear();
 
-}
+//EMCal extrapolation
+   m_tr_CEMC_eta.clear();
+   m_tr_CEMC_phi.clear();
+   m_tr_CEMC_x.clear();
+   m_tr_CEMC_y.clear();
+   m_tr_CEMC_z.clear();
+   m_tr_CEMC_px.clear();
+   m_tr_CEMC_py.clear();
+   m_tr_CEMC_pz.clear();
+
+} //End of tracks
+
 
 /**
  * This method gets clusters from the EMCal and stores them in a tree. It
@@ -865,6 +969,7 @@ void CalData::initializeTrees()
   m_tracktree->Branch("truth_eta", &m_trutheta);
   m_tracktree->Branch("truth_pid", &m_truthpid);
 
+/////////////////////Clusters calorimeters//////////////////////////////
   //////////////EMCal/////////////////////////////
   m_tracktree->Branch("clus_energy", &m_clusenergy);
   m_tracktree->Branch("clus_eta", &m_cluseta);
@@ -887,6 +992,16 @@ void CalData::initializeTrees()
   //m_tracktree->Branch("clustheta_HCalOUT", &m_clustheta_HCalOUT);
   m_tracktree->Branch("clusphi_HCalOUT", &m_clusphi_HCalOUT);
   m_tracktree->Branch("cluspt_HCalOUT", &m_cluspt_HCalOUT);
+
+////////////////////Tracks extrapolation calorimeters////////////////////////////////////////////////////  
+  m_tracktree->Branch("tr_CEMC_eta", &m_tr_CEMC_eta); 
+  m_tracktree->Branch("tr_CEMC_phi", &m_tr_CEMC_phi); 
+  m_tracktree->Branch("tr_CEMC_x", &m_tr_CEMC_x); 
+  m_tracktree->Branch("tr_CEMC_y", &m_tr_CEMC_y); 
+  m_tracktree->Branch("tr_CEMC_z", &m_tr_CEMC_z); 
+  m_tracktree->Branch("tr_CEMC_px", &m_tr_CEMC_px); 
+  m_tracktree->Branch("tr_CEMC_py", &m_tr_CEMC_py); 
+  m_tracktree->Branch("tr_CEMC_pz", &m_tr_CEMC_pz); 
 
   m_hepmctree = new TTree("hepmctree", "A tree with hepmc truth particles");
   m_hepmctree->Branch("m_partid1", &m_partid1, "m_partid1/I");
@@ -980,8 +1095,8 @@ void CalData::initializeVariables()
   m_truthtrackphi = -99;
   m_truthtracketa = -99;
   m_truthtrackpid = -99;*/
-
-
+ 
 }
+
 
 
