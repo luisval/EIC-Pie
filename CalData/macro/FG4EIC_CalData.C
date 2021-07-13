@@ -27,7 +27,7 @@ R__LOAD_LIBRARY(/home/luis/software/nuclearexp/EIC/clean/macros/src/install/lib/
 
 
 int FG4EIC_CalData(
-    const int nEvents = 5,
+    const int nEvents = 100,
     const string &inputFile = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
     const string &outputFile = "G4EICDetector.root",
     const string &embed_input_file = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
@@ -131,7 +131,7 @@ int FG4EIC_CalData(
   // add the settings for other with [1], next with [2]...
   if (Input::SIMPLE)
   {
-    INPUTGENERATOR::SimpleEventGenerator[0]->add_particles("pi-", 1);
+    INPUTGENERATOR::SimpleEventGenerator[0]->add_particles("e-", 1);
     if (Input::HEPMC || Input::EMBED)
     {
       INPUTGENERATOR::SimpleEventGenerator[0]->set_reuse_existing_vertex(true);
@@ -147,7 +147,7 @@ int FG4EIC_CalData(
     }
     INPUTGENERATOR::SimpleEventGenerator[0]->set_eta_range(-1, 1);
     INPUTGENERATOR::SimpleEventGenerator[0]->set_phi_range(-M_PI, M_PI);
-    INPUTGENERATOR::SimpleEventGenerator[0]->set_pt_range(1.0, 2.0);
+    INPUTGENERATOR::SimpleEventGenerator[0]->set_pt_range(1.0, 20.0);
   }
   // Upsilons
   // if you run more than one of these Input::UPSILON_NUMBER > 1
@@ -480,6 +480,7 @@ int FG4EIC_CalData(
   // Simulation evaluation
   //----------------------
 
+/*
   if (Enable::EVENT_EVAL) Event_Eval(outputroot + "_eventtree.root");
 
   if (Enable::TRACKING_EVAL) Tracking_Eval(outputroot + "_g4tracking_eval.root");
@@ -499,6 +500,7 @@ int FG4EIC_CalData(
   if (Enable::FWDJETS_EVAL) Jet_FwdEval();
 
   if (Enable::USER) UserAnalysisInit();
+  */
 
   ////////////CalData////////////////////////////////////////////////////////////
   CalData *calData = new CalData("calData", outputroot + "_calData.root");
