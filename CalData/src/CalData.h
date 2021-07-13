@@ -240,6 +240,11 @@ class CalData : public SubsysReco
   std::vector<double> m_tr_CEMC_py;
   std::vector<double> m_tr_CEMC_pz;
 
+    /// Tower variables
+  std::vector<double> m_towenergy;
+  std::vector<double> m_toweta;
+  std::vector<double> m_towphi;
+       
 };
 
 #endif

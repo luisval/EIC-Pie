@@ -75,6 +75,7 @@ CalData::CalData(const std::string &name, const std::string &filename)
   , m_outfilename(filename)
   , m_hm(nullptr)
   , m_mincluspt(0.25)
+//  , m_mintowpt(0.25)
   , m_analyzeTracks(true)
   , m_analyzeClusters(true)
   , m_analyzeTruth(false)
@@ -207,6 +208,7 @@ int CalData::End(PHCompositeNode *topNode)
    cout <<"         /=\\ //=\\ /=\\       | | |   "<<endl;                                                                                                                                                          
     cout <<"__________[_]_[_]_[_]________/_]_[_\\____"<<endl;   
  //////////////////////////////////////////////////////////////////////////////////////   
+ ////////////////////From telnet towel.blinkenlights.nl///////////////////////////////
 
   return 0;
 }
@@ -416,6 +418,11 @@ m_cluspt_HCalOUT.clear();
    m_tr_CEMC_px.clear();
    m_tr_CEMC_py.clear();
    m_tr_CEMC_pz.clear();
+
+//Towers
+m_towenergy.clear();
+m_toweta.clear();
+m_towphi.clear();
   
 /////////////////
 
@@ -749,11 +756,7 @@ RawClusterContainer *clusters_hcalout = findNode::getClass<RawClusterContainer>(
 
 //////////////////////////////////////Clusters caloirimeters end///////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////Tracks calorimeters extrapolation////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-//////////////////////////CEMCal tracks extrapolation///////////////////////////
+//////////////////////////CEMCal clusters tracks extrapolation///////////////////////////
   
 for (SvtxTrackMap::Iter iter = trackmap->begin(); iter != trackmap->end(); ++iter){
  
@@ -783,6 +786,106 @@ for (SvtxTrackMap::Iter iter = trackmap->begin(); iter != trackmap->end(); ++ite
      }   
    }
 }
+
+/////////////////////////////////////TOWERS//////////////////////////////////////////
+
+  RawTowerContainer *towers = findNode::getClass<RawTowerContainer>(topNode, "TOWER_CALIB_HCALIN");
+
+  RawTowerGeomContainer* towergeom = findNode::getClass<RawTowerGeomContainer>(topNode, "TOWERGEOM_HCALIN");
+
+
+  if (!towers)
+  {
+    cout << PHWHERE
+         << "Tower node is missing, can't collect towers"
+         << endl;
+    return;
+  }
+
+   // if(towers) cout << "towers size" << towers->size() << endl;
+
+  if (towers)
+  {
+    // again pair of iterators to begin and end of tower map
+    RawTowerContainer::ConstRange tower_range = towers->getTowers();
+    for (RawTowerContainer::ConstIterator tower_iter = tower_range.first; tower_iter != tower_range.second; tower_iter++)
+
+    {
+      int phibin = tower_iter->second->get_binphi();
+      int etabin = tower_iter->second->get_bineta();
+      double phi = towergeom->get_phicenter(phibin);
+      double eta = towergeom->get_etacenter(etabin);
+  
+
+   m_towenergy .push_back(tower_iter->second->get_energy());
+   m_toweta .push_back(eta);
+   m_towphi .push_back(phi);
+
+    }
+  }
+
+
+
+/*
+
+  /// Get the global vertex to determine the appropriate pseudorapidity of the clusters
+  GlobalVertexMap *vertexmap_tow = findNode::getClass<GlobalVertexMap>(topNode, "GlobalVertexMap");
+  if (!vertexmap_tow)
+  {
+    cout << "CalData::getTowers - Fatal Error - GlobalVertexMap node is missing. Please turn on the do_global flag in the main macro in order to reconstruct the global vertex." << endl;
+    assert(vertexmap_tow);  // force quit
+
+    return;
+  }
+
+  if (vertexmap_tow->empty())
+  {
+    cout << "CalData::getTowers - Fatal Error - GlobalVertexMap node is empty. Please turn on the do_global flag in the main macro in order to reconstruct the global vertex." << endl;
+    return;
+  }
+
+
+
+  GlobalVertex *vtx_tow = vertexmap_tow->begin()->second;
+  if (vtx_tow == nullptr)
+    return;
+
+
+  RawTowerContainer::ConstRange begin_end_tow = towers->getTowers();
+  RawTowerContainer::ConstIterator towIter;
+ 
+  /// Loop over the EMCal clusters
+  for (towIter = begin_end_tow.first;
+       towIter != begin_end_tow.second;
+       ++towIter)
+  {
+    /// Get this cluster
+    const RawTower *Tower = towIter->second;
+
+    /// Get cluster characteristics
+    /// This helper class determines the photon characteristics
+    /// depending on the vertex position
+    /// This is important for e.g. eta determination and E_T determination
+    CLHEP::Hep3Vector vertex(vtx_tow->get_x(), vtx_tow->get_y(), vtx_tow->get_z());
+    CLHEP::Hep3Vector vec_tower = RawTowerUtility::GetECoreVec(*tower, vertex);
+
+   if (vec_tower.perp() < m_mincluspt) continue; //cut in pt, skip lower than 0.25 GeV ~ stupid noise
+    //cout << "pt:" << tower.perp() << endl;
+
+   m_towenergy .push_back(vec_tower.mag());
+   m_toweta .push_back(vec_tower.pseudoRapidity());
+   m_towtheta .push_back(vec_tower.getTheta());
+   m_towpt .push_back(vec_tower.perp());
+   m_towphi .push_back(vec_tower.getPhi());
+
+  }
+
+  */
+
+ //////////////////////////////////////End of towers//////////////////////////////////////////////////
+
+
+
 
 m_clustertree->Fill();
 m_tracktree->Fill();
@@ -841,6 +944,12 @@ m_cluspt_HCalOUT.clear();
    m_tr_CEMC_px.clear();
    m_tr_CEMC_py.clear();
    m_tr_CEMC_pz.clear();
+
+//Towers
+m_towenergy.clear();
+m_toweta.clear();
+m_towphi.clear();
+
 
 } //End of tracks
 
@@ -936,8 +1045,6 @@ void CalData::getEMCalClusters(PHCompositeNode *topNode)
   }
 }
 
-
-
 /**
  * This function puts all of the tree branch assignments in one place so as to not
  * clutter up the CalData::Init function.
@@ -1003,6 +1110,13 @@ void CalData::initializeTrees()
   m_tracktree->Branch("tr_CEMC_py", &m_tr_CEMC_py); 
   m_tracktree->Branch("tr_CEMC_pz", &m_tr_CEMC_pz); 
 
+//////////////////Towers///////////////////////////////////////
+
+  m_tracktree->Branch("towenergy", &m_towenergy); 
+  m_tracktree->Branch("toweta", &m_toweta); 
+  m_tracktree->Branch("towphi", &m_towphi); 
+
+
   m_hepmctree = new TTree("hepmctree", "A tree with hepmc truth particles");
   m_hepmctree->Branch("m_partid1", &m_partid1, "m_partid1/I");
   m_hepmctree->Branch("m_partid2", &m_partid2, "m_partid2/I");
@@ -1041,6 +1155,9 @@ void CalData::initializeTrees()
   m_clustertree->Branch("m_cluspy", &m_cluspy, "m_cluspy/D");
   m_clustertree->Branch("m_cluspz", &m_cluspz, "m_cluspz/D");
   m_clustertree->Branch("m_E_4x4", &m_E_4x4, "m_E_4x4/D");
+
+
+
 }
 
 /**
