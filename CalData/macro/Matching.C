@@ -91,78 +91,12 @@ void Matching::Loop(){
 
          float E_tow = towenergy->at(idx_dR_tow);
 
-         cout << "E tow:" << E_tow << endl;
+       //  cout << "E tow:" << E_tow << endl;
           
-          th1_dist[8]->Fill(E_tow);
-
-              
-/*
-         th2[0]->Fill(track_pt->at(j), track_pt->at(j)-track_pt->at(idx_dR) );
-         th2[1]->Fill(track_pt->at(j), track_eta->at(j)-track_eta->at(idx_dR) );
-         th2[2]->Fill(track_pt->at(j), track_phi->at(j)-track_phi->at(idx_dR) );
-
-         th2[6]->Fill(track_pt->at(j),  dRmin(track_eta->at(j), track_phi->at(j), dummy) );
-         th2[7]->Fill(track_eta->at(j), dRmin(track_eta->at(j), track_phi->at(j), dummy) );
-         th2[8]->Fill(track_phi->at(j), dRmin(track_eta->at(j), track_phi->at(j), dummy) );
-
-         th2[3]->Fill(track_pt->at(idx_dR), track_pt->at(j) );
-         th2[4]->Fill(track_eta->at(idx_dR), track_eta->at(j) );
-         th2[5]->Fill(track_phi->at(idx_dR), track_phi->at(j) );
-*/
-
-           // cout << "eta:  " <<  dEtamin(track_eta->at(j), idx_dEta) << endl;
-          //  cout << "dRmin:  " <<  dRmin(track_eta->at(j), track_phi->at(j), dummy) << endl;
-
-
-       //  float dRcut = prof_dr_pt->GetBinContent(prof_dr_pt->FindBin(track_pt->at(j)));
-       //  float dRcut_er = prof_dr_pt->GetBinError(prof_dr_pt->FindBin(track_pt->at(j)));
+          th1_dist[8]->Fill(E_tow);          
 
 
        } //End of tracks loop
-
-     // cout << "dR:  " << dR << endl;
-
-/*
-
-       TProfile * prof_dr_pt = th2[6]->ProfileX();
-
-              for (int j = 0; j < truth_pt->size(); ++j){
-              if( Get_charge(truth_pid->at(j))==0 ) continue;
-              if(abs(truth_eta->at(j))>3.5) continue; //Change for track_eta?   
-
-              float dRcut = prof_dr_pt->GetBinContent(prof_dr_pt->FindBin(truth_pt->at(j)));
-              float dRcut_er = prof_dr_pt->GetBinError(prof_dr_pt->FindBin(truth_pt->at(j)));
-
-              //efficiency
-
-              int dummy;
-              th1[0]->Fill(truth_pt->at(j));
-              if( dRmin(truth_eta->at(j), truth_phi->at(j), dummy) < (dRcut) ) th1[1]->Fill(truth_pt->at(j));
-
-              th1[2]->Fill(Get_charge(truth_pid->at(j))*truth_eta->at(j));
-              if( dRmin(truth_eta->at(j), truth_phi->at(j), dummy) < (dRcut) ) th1[3]->Fill(Get_charge(truth_pid->at(j))*truth_eta->at(j));
-
-              th1[6]->Fill(truth_eta->at(j));
-              if( dRmin(truth_eta->at(j), truth_phi->at(j), dummy) < (dRcut) ) th1[7]->Fill(truth_eta->at(j));
-
-              th1[4]->Fill(truth_phi->at(j));
-              if( dRmin(truth_eta->at(j), truth_phi->at(j), dummy) < (dRcut) ) th1[5]->Fill(truth_phi->at(j));
-             
-             } //End of truth events
-*/
-           /*
-             for (int j = 0; j < truth_pt->size(); ++j){
-                 th1_dist[0]->Fill(truth_pt->at(j));
-                 th1_dist[3]->Fill(truth_eta->at(j));
-                 th1_dist[8]->Fill(truth_phi->at(j));
-
-                 if( Get_charge(truth_pid->at(j))==0 ) continue;  
-                   th1_dist[1]->Fill(truth_pt->at(j));
-                   th1_dist[4]->Fill(truth_eta->at(j));
-                   th1_dist[5]->Fill(Get_charge(truth_pid->at(j))*truth_eta->at(j));
-                   th1_dist[9]->Fill(truth_phi->at(j));
-               }// End truth events
-            */
 
                 for (int j = 0; j < track_pt->size(); ++j){
                     th1_dist[2]->Fill(track_pt->at(j));
@@ -172,14 +106,7 @@ void Matching::Loop(){
                  //   th1_dist[7]->Fill(Ep);
 
                  }// End truth events  
-
-                 /*  for (int j = 0; j < clus_pt->size(); ++j){
-                    th1_dist[2]->Fill(clus_pt->at(j));
-                    th1_dist[6]->Fill(clus_eta->at(j));
-                  //  th1_dist[7]->Fill(clus_charge->at(j)*track_eta->at(j));
-                    th1_dist[10]->Fill(clus_phi->at(j));
-                 }// End clus events  */
-
+                 
 } //End of the events loop
 
 
