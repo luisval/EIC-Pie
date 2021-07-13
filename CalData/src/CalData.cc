@@ -493,13 +493,6 @@ m_towphi.clear();
    
     if(track) cout << "track px " << track->get_px() << endl; 
 
-    /*for (SvtxTrack::ConstStateIter trkstates = track->begin_states(); trkstates != track->end_states(); ++trkstates){
-    	cout << __PRETTY_FUNCTION__ << " checking " << trkstates->second->get_name() << endl;
-	map<string, unsigned int>::const_iterator iter = m_ProjectionNameMap.find(trkstates->second->get_name());
-	if (iter != m_ProjectionNameMap.end()){
-		cout << __PRETTY_FUNCTION__ << " found " << trkstates->second->get_name() << endl;
-	}	
-    }*/ 
 
     /// Get the reconstructed track info
     float px = track->get_px();
@@ -764,7 +757,7 @@ for (SvtxTrackMap::Iter iter = trackmap->begin(); iter != trackmap->end(); ++ite
 
     for (SvtxTrack::ConstStateIter trkstates = track->begin_states(); trkstates != track->end_states(); ++trkstates){
        
-        cout << "trkstates: " << trkstates->second->get_name() << endl;
+     //   cout << "trkstates: " << trkstates->second->get_name() << endl;
    
       if(trkstates->second->get_name() == "CEMC"){
  
