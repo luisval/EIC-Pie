@@ -79,7 +79,6 @@ public :
   vector<double> *toweta;
   vector<double> *towphi;
 
-
    // List of branches
    TBranch        *b_track_px;   //!
    TBranch        *b_track_py;   //!
@@ -164,9 +163,9 @@ Matching::Matching(TTree *tree) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("G4EICDetector_calData.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("G4EICDetector_calData1000e.root");
       if (!f || !f->IsOpen()) {
-         f = new TFile("G4EICDetector_calData.root");
+         f = new TFile("G4EICDetector_calData1000e.root");
       }
       f->GetObject("tracktree",tree);
 
