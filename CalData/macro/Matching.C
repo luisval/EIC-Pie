@@ -17,7 +17,10 @@ void Matching::Loop(){
   if (fChain == 0) return;
   Long64_t nentries = fChain->GetEntriesFast();
    
-  TFile* fout = new TFile(Form("G4EICDetector_out.root"),"RECREATE");
+//  TFile* fout = new TFile(Form("G4EICDetector_out.root"),"RECREATE");
+
+   TFile *fout = new TFile("G4EICDetector_out.root","RECREATE");
+
 
   TH1F *h_dRmin = new TH1F("h_dRmin","dRmin",40,0,4);
         h_dRmin->SetFillColorAlpha(40, 0.35);
@@ -154,6 +157,20 @@ void Matching::Loop(){
                                
 } //End of the events loop
 
+h_EMCal_Ep->Write();
+h_tow_Ep->Write();
+
+h_EMCal_E->Write();
+h_tow_E->Write();
+h_towclus_E->Write();
+
+h_dRmin->Write();
+h_dRmin_tow->Write();
+h_track_p->Write();
+h_track_pt->Write();
+
+
+/*
 TCanvas *c0 = new TCanvas();
    c0->SetLogy();  
    h_dRmin->SetXTitle("dRmin");
@@ -214,8 +231,6 @@ TCanvas *c0 = new TCanvas();
    h_tow_Ep->Draw();
    c5->SaveAs("plots/tow_Ep.svg");
 
-
-
   TCanvas *c6 = new TCanvas();
    //c6->SetLogy();  
    h_track_p->SetXTitle("track_p");
@@ -244,9 +259,9 @@ TCanvas *c80 = new TCanvas();
    h_dRmin_tow->GetYaxis()->CenterTitle(true);
    h_dRmin_tow->GetYaxis()->SetTitleOffset(1.2);
    h_dRmin_tow->Draw();
-   c0->SaveAs("plots/dRmin.svg");
-     
-
+   c0->SaveAs("plots/dRmin.svg");     
+*/
+  // fout->Close();
 //////////////////////////////////////////////////////////////////////////////////////
  cout << "---End of the program. Gracias-----" << endl;
 
