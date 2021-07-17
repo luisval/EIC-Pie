@@ -14,8 +14,8 @@
 Int_t efficiency()
 {
 
-TFile *file1 = TFile::Open("G4EICDetector_out_e.root");
-TFile *file2 = TFile::Open("G4EICDetector_out_pi.root");
+TFile *file1 = TFile::Open("G4EICDetector_out_e_manybins.root");
+TFile *file2 = TFile::Open("G4EICDetector_out_pi_manybins.root");
 
        if (file1 && file2->IsZombie()) { cout << "Error opening a file" << endl;
        exit(-1);} 
@@ -54,11 +54,6 @@ TFile *file2 = TFile::Open("G4EICDetector_out_pi.root");
         cout <<"nbinsh1: " << nbinsh1 << endl;
         cout <<"nbinsh2: " << nbinsh2 << endl;
         cout <<"Total bins: " << nbintstotal << endl;
-
-     //   h1_EMCal_Ep->Scale(1./(nbintstotal));
-     //   h2_EMCal_Ep->Scale(1./(nbintstotal));
-           //h1_EMCal_Ep->Scale(1./(h1_EMCal_Ep)->Integral());
-           //h2_EMCal_Ep->Scale(1./(h2_EMCal_Ep)->Integral());
 
 ////////////////////////////////Finding the e efficiencicy////////////////////////////////////////////////
  Double_t a = 0.0;
@@ -154,9 +149,8 @@ TFile *file2 = TFile::Open("G4EICDetector_out_pi.root");
               ep95= h1_EMCal_Ep->GetXaxis()->GetBinCenter(bBin);
 
 
-
                cout<<"eff10: "<<eff10<<endl; 
-               cout<<"eff20: "<<eff20<<endl; 
+               cout<<"eff90: "<<eff90<<endl; 
 
                cout<<"ep10: "<<ep10<<endl; 
                cout<<"ep20: "<<ep20<<endl; 
@@ -169,7 +163,6 @@ TFile *file2 = TFile::Open("G4EICDetector_out_pi.root");
                cout<<"ep90: "<<ep90<<endl; 
                cout<<"ep95: "<<ep95<<endl; 
 
-
                cout<<"fraction: "<<fraction<<endl;  
                cout<<"bBin: "<<bBin<<endl; 
                cout<<"epsilon: "<<epsilon<<endl;   
@@ -177,8 +170,6 @@ TFile *file2 = TFile::Open("G4EICDetector_out_pi.root");
                cout<<"totalIntegral: "<<totalIntegral<<endl;  
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
   TCanvas *c1 = new TCanvas("c12","EMCal E/p");
   gStyle->SetOptStat(false);
@@ -203,9 +194,6 @@ TFile *file2 = TFile::Open("G4EICDetector_out_pi.root");
   c1->SaveAs("Ep_pie.pdf");
   
  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- // file1->Close();
- // file2->Close();
-
   cout<<"End of the program. Gracias"<<endl;
   return 0;  
 }
