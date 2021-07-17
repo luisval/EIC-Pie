@@ -61,9 +61,9 @@ TFile *file2 = TFile::Open("G4EICDetector_out_pi.root");
            //h2_EMCal_Ep->Scale(1./(h2_EMCal_Ep)->Integral());
 
 ////////////////////////////////Finding the e efficiencicy////////////////////////////////////////////////
- Double_t a = 0;
+ Double_t a = 0.0;
  Double_t fraction =100;
- Double_t epsilon = 0.001; 
+ Double_t epsilon = 0.01; 
  Int_t totalIntegral = h1_EMCal_Ep->Integral(h1_EMCal_Ep->FindFixBin(0), h1_EMCal_Ep->FindFixBin(2));
 
  Double_t eff10 = 0.1;
