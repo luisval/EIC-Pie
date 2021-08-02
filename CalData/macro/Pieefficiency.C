@@ -153,11 +153,12 @@ TFile *file2 = TFile::Open("G4EICDetector_out_pi.root");
 
   TCanvas *c1 = new TCanvas("c12","EMCal E/p");
   gStyle->SetOptStat(false);
-  c1->SetRightMargin(0.0465116);
+  c1->SetRightMargin(0.1);
   c1->SetTopMargin(0.1);
   c1->SetFillColor(0);
 
-   h1_EMCal_Ep->SetTitle("EMCal E/p e^{-} and #pi^{-}");
+    h1_EMCal_Ep->SetTitle("e^{-}");
+    h2_EMCal_Ep->SetTitle("#pi^{-}");
 
     h1_EMCal_Ep->Draw();
     h2_EMCal_Ep->Draw("same");
@@ -226,7 +227,7 @@ TCanvas *c2 = new TCanvas("c5","Efficiency of #e^{-} and #pi^{-} ",200,10,500,30
   // c2->SetRightMargin(0.0465116);
   // c2->SetTopMargin(0.1);
   // c2->SetFillColor(0);
-  c2->SaveAs("Ep_eff.pdf");
+  c2->SaveAs("Ep_eff.gif");
 
 
 
@@ -287,7 +288,7 @@ TCanvas *c3 = new TCanvas("c3","Efficiency of #e^{-} and #pi^{-} ",200,10,500,30
 
   c3->BuildLegend();
 
-  c3->SaveAs("Ep_eff2.pdf");
+  c3->SaveAs("Ep_eff2.gif");
 
  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
