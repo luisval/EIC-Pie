@@ -466,7 +466,7 @@ m_towphi.clear();
      return;
    }
 
-  if(trackmap) cout << "trackmap size" << trackmap->size() << endl;
+  //if(trackmap) cout << "trackmap size" << trackmap->size() << endl;
 
   /// EvalStack for truth track matching
   if(!m_svtxEvalStack)
@@ -491,7 +491,7 @@ m_towphi.clear();
 
     SvtxTrack *track = iter->second;
    
-    if(track) cout << "track px " << track->get_px() << endl; 
+   // if(track) cout << "track px " << track->get_px() << endl; 
 
 
     /// Get the reconstructed track info
@@ -775,6 +775,26 @@ for (SvtxTrackMap::Iter iter = trackmap->begin(); iter != trackmap->end(); ++ite
       m_tr_CEMC_py .push_back(trkstates->second->get_mom(1));
       m_tr_CEMC_pz .push_back(trkstates->second->get_mom(2));
 
+    }
+
+      else {
+ /*
+      double CEMC_x = trkstates->second->get_pos(0);
+      double CEMC_y = trkstates->second->get_pos(1);
+      double CEMC_z = trkstates->second->get_pos(2);
+      */
+ 
+      m_tr_CEMC_eta .push_back(9999.);
+      m_tr_CEMC_phi .push_back(9999.);
+
+      m_tr_CEMC_x .push_back(9999.);
+      m_tr_CEMC_y .push_back(9999.);
+      m_tr_CEMC_z .push_back(9999.);
+      m_tr_CEMC_px .push_back(9999.);
+      m_tr_CEMC_py .push_back(9999.);
+      m_tr_CEMC_pz .push_back(9999.);
+
+    
          // cout << "CEMC extrapolation " << endl; 
      }   
    }
