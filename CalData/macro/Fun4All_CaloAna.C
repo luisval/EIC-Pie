@@ -11,27 +11,7 @@ R__LOAD_LIBRARY(libfun4all.so)
 R__LOAD_LIBRARY(/home/luis/software/nuclearexp/EIC/clean/macros/src/install/lib/libcaldata.so)
 #endif
 
-//void Fun4All_CaloAna(const char *fname = "/home/luis/software/nuclearexp/data/ep_18x100lowq2/DST_SIDIS_pythia6_ep_18x100lowq2_0.root")
-
- char fname[100];
- //char fileList[100];
-
-
-void Fun4All_CaloAna()
-{
-
-/*
-for (Int_t nf = 0; nf <2; nf++){      // files name DST_SIDIS_pythia6_ep_18x100lowq2_#.root, from nf to nf++
-
-       sprintf(fname,"/home/luis/software/nuclearexp/data/ep_18x100lowq2/DST_SIDIS_pythia6_ep_18x100lowq2_%d.root",nf);
-
-        cout <<" Openning file " << fname << endl;
-        TString inputFile=fname;
-*/
-
-  //  TFile fileInput(inputFile.Data());
-  //  if (fileInput.IsZombie()) continue;
-
+void Fun4All_CaloAna(){
 
   gSystem->Load("libg4dst");
  // gSystem->Load("libcaloana");
@@ -55,21 +35,5 @@ for (Int_t nf = 0; nf <2; nf++){      // files name DST_SIDIS_pythia6_ep_18x100l
   se->run();
   se->End();
 
-
-/*
-  Fun4AllInputManager *hitsin = new Fun4AllDstInputManager("DSTin");
-  hitsin->AddListFile("fileList_bs2jpsiphi.txt");
-  se->registerInputManager(hitsin);
-  */
-
-
-/*
-  Fun4AllInputManager *in = new Fun4AllDstInputManager("in");
-  in->fileopen(fname);
-  se->registerInputManager(in);
-  se->run();
-  se->End();
-  */
 }
 
-//}
