@@ -142,6 +142,7 @@ public :
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
 
+
    float dR(float Eta1, float Phi1, float Eta2, float Phi2);
    float dRmin(float Eta1, float Phi1, int &index);
 
@@ -150,6 +151,9 @@ public :
    int Get_charge(int par_ID);
 
    float dRmin_tow(float Eta1, float Phi1, int &index);
+
+   float dRmin_th(float Eta1, float Phi1, int &index);
+
 
   // TH1 *th1[12];
  //  TH1 *th1_dist[12];
@@ -163,9 +167,9 @@ Matching::Matching(TTree *tree) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("G4EICDetector_calData1000pi.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("DISepcalData_lowpt.root");
       if (!f || !f->IsOpen()) {
-         f = new TFile("G4EICDetector_calData1000pi.root");
+         f = new TFile("DISepcalData_lowpt.root");
       }
       f->GetObject("tracktree",tree);
 

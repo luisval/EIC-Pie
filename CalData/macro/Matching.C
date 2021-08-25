@@ -1,8 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////// This macro finds the closest cluster to a given track and the closest tower to a given cluster. 
 ////// Besides, it plots the coefficient of the deposited energy by the track momentum.
-////// Authors: Sebastian Tapia
-//////          Luis Valenzuela Cazares
+////// Authors: Luis Valenzuela Cazares
+//////          Sebastian Tapia
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #define Matching_cxx
@@ -19,7 +19,7 @@ void Matching::Loop(){
    
 //  TFile* fout = new TFile(Form("G4EICDetector_out.root"),"RECREATE");
 
-   TFile *fout = new TFile("G4EICDetector_out.root","RECREATE");
+   TFile *fout = new TFile("G4EICDetector_out_low__10-20GeV.root","RECREATE");
 
 
   TH1F *h_dRmin = new TH1F("h_dRmin","dRmin",40,0,4);
@@ -28,7 +28,7 @@ void Matching::Loop(){
         h_dRmin->SetYTitle("Counts");
         h_dRmin->GetXaxis()->CenterTitle(true);
         h_dRmin->GetYaxis()->CenterTitle(true);
-        h_dRmin->GetYaxis()->SetTitleOffset(1.2);      
+        h_dRmin->GetYaxis()->SetTitleOffset(1.2);     
 
   TH1F *h_EMCal_E = new TH1F("h_EMCal_E","CEMC Cluster energy",40,0,20);
         h_EMCal_E->SetFillColorAlpha(40, 0.35);
@@ -52,7 +52,16 @@ void Matching::Loop(){
         h_track_pt->SetYTitle("Counts");
         h_track_pt->GetXaxis()->CenterTitle(true);
         h_track_pt->GetYaxis()->CenterTitle(true);
-        h_track_pt->GetYaxis()->SetTitleOffset(1.2);     
+        h_track_pt->GetYaxis()->SetTitleOffset(1.2);    
+
+  TH1F *h_track_eta = new TH1F("h_track_eta","#eta",40,-5,5);
+        h_track_eta->SetFillColorAlpha(40, 0.35);
+        h_track_eta->SetXTitle("#eta");
+        h_track_eta->SetYTitle("Counts");
+        h_track_eta->GetXaxis()->CenterTitle(true);
+        h_track_eta->GetYaxis()->CenterTitle(true);
+        h_track_eta->GetYaxis()->SetTitleOffset(1.2);     
+ 
 
   TH1F *h_EMCal_Ep = new TH1F("h_EMCal_Ep","EMCal E/track_p",20,0,2);
         h_EMCal_Ep->SetFillColorAlpha(40, 0.35);
@@ -105,7 +114,7 @@ void Matching::Loop(){
       nb = fChain->GetEntry(jentry);   nbytes += nb;
       // if (Cut(ientry) < 0) continue;
 
-       if( (m_eventCounter % 100) ==0 ) cout << "Event number = "<< m_eventCounter << endl;
+       if( (m_eventCounter % 1000) ==0 ) cout << "Event number = "<< m_eventCounter << endl;
        m_eventCounter++;
 
 
@@ -113,47 +122,75 @@ void Matching::Loop(){
        if(track_pt->empty()) continue;
        if(clus_energy->empty()) continue;
        if(towenergy->empty()) continue;
-       if(tr_CEMC_eta->empty()) continue;
+       if (track_eta->empty()) continue;
+       if (tr_CEMC_phi->empty()) continue;
+
+       if (truth_eta->empty()) continue;
 
        //Tracks loop
        for (int j = 0; j < track_pt->size(); ++j){
 
-          //   cout << "track size:  " << track_pt->size() << endl;
-
+          // cout << "track size:  " << track_pt->size() << endl;
+          // cout << "clus energy size:  " << clus_energy->size() << endl;
+          // cout << "towenergy size:  " << towenergy->size() << endl;
+          // cout << "tr_CEMC_eta size:  " << tr_CEMC_eta->size() << endl;
           
-         if(abs(track_eta->at(j))>1.5) continue;
+        if(track_eta->at(j)>1.1 || track_eta->at(j)<-1.5) continue; //cut pseudorapidity for low q2
+      //  if(abs(track_eta->at(j))>1.0) continue; //cut pseudorapidity for high q2
+
+         //  cout << "track eta:  " << track_eta->at(j)<< endl;
+        
+           if(abs(track_pt->at(j))<10) continue;
+           if(abs(track_pt->at(j))>20) continue;
+         // if(abs(track_pt->at(j))<10) continue;
+         // cout << "track pt:  " << track_pt->at(j)<< endl;
+
          // dR and resolutions
-         int idx_dR, idx_dEta, idx_dPhi, dummy, idx_dR_tow;
+         int idx_dR, idx_dEta, idx_dPhi, dummy, idx_dR_tow, idx_dR_track;
+        
+          if (tr_CEMC_eta->at(j)==9999.) continue;
+       //   if (truth_eta->at(j)==99999999.) continue;
+      //    if (track_eta->at(j)==99999999.) continue;
+               
+         dRmin_th(track_eta->at(j), track_phi->at(j), idx_dR_track);
+
+         //   if (truth_pid->at(idx_dR_track)!=11) continue; //Turn on for electrons
+        //  if (truth_pid->at(idx_dR_track)!=-211) continue; //Turn on for pions
+            if (truth_pid->at(idx_dR_track)!=-321) continue; //Turn on for kaons
+
+           cout << "truth id:  " << truth_pid->at(idx_dR_track) << endl;
+
+        // cout << "tr_CEMC_eta:  " << tr_CEMC_eta->at(j) << endl;
+        // cout << "idx_dR:  " << idx_dR << endl;
+
          h_dRmin->Fill( dRmin(tr_CEMC_eta->at(j), tr_CEMC_phi->at(j), idx_dR) );
+      //   cout << "dRmin: " << dRmin(tr_CEMC_eta->at(j), tr_CEMC_phi->at(j), idx_dR) << endl;
 
          float Ep = clus_energy->at(idx_dR)/track_p->at(j);
          h_EMCal_Ep->Fill(Ep);
-
          h_EMCal_E->Fill(clus_energy->at(idx_dR));
 
+      //   if(Ep < 0.2){ 
+          h_track_eta->Fill(track_eta->at(j));
+          h_track_p->Fill(track_p->at(j)); 
+       //  }
 
          dRmin_tow(clus_eta->at(idx_dR), clus_phi->at(idx_dR), idx_dR_tow );
 
          float E_tow = towenergy->at(idx_dR_tow);
-
          float  Ep_tow = towenergy->at(idx_dR_tow)/track_p->at(j);
-
          float tow_clus_E = towenergy->at(idx_dR_tow)/clus_energy->at(idx_dR);
-
 
        //  cout << "E tow:" << E_tow << endl;
           
           h_tow_E->Fill(E_tow);     
-
           h_tow_Ep->Fill(Ep_tow);
-
           h_towclus_E->Fill(tow_clus_E); 
-     
-          h_track_p->Fill(track_p->at(j)); 
+      //    h_track_p->Fill(track_p->at(j)); 
           h_track_pt->Fill(track_pt->at(j)); 
+     //     h_track_eta->Fill(track_eta->at(j)); 
 
        } //End of tracks loop
-
                                
 } //End of the events loop
 
@@ -168,7 +205,7 @@ h_dRmin->Write();
 h_dRmin_tow->Write();
 h_track_p->Write();
 h_track_pt->Write();
-
+h_track_eta->Write();
 
 /*
 TCanvas *c0 = new TCanvas();
@@ -294,6 +331,26 @@ TCanvas *c80 = new TCanvas();
 
    return dr;
    }   
+
+      ///////////////////////////
+   float Matching::dRmin_th(float Eta1, float Phi1, int &index){
+     float dRmin = 99;
+
+     if(truth_pt->empty()) return dRmin;
+     for (int j = 0; j < truth_pt->size(); ++j){
+       // cout << "truth pt size:  " << truth_pt->size() << endl;
+
+       float dr = dR( Eta1,  Phi1, truth_eta->at(j), truth_phi->at(j) );
+
+       if(dr < dRmin){
+         dRmin = dr;
+         index = j;
+      } 
+   }
+ 
+   return dRmin;
+   }
+   ///////////////////////////
 
    float Matching::dRmin(float Eta1, float Phi1, int &index){
      float dRmin = 99;
