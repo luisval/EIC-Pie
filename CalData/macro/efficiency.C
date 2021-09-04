@@ -14,12 +14,11 @@
 Int_t efficiency()
 {
 
-TFile *file1 = TFile::Open("G4EICDetector_out_hq2_e_0.5-1GeV.root");
-TFile *file2 = TFile::Open("G4EICDetector_out_hq2_e_0.5-1GeV.root");
+TFile *file1 = TFile::Open("G4EICDetector_out_hq2_e_1-2GeV.root");
 
-       if (file1 && file2->IsZombie()) { cout << "Error opening a file" << endl;
+       if (file1->IsZombie()) { cout << "Error opening a file" << endl;
        exit(-1);} 
-       else {cout << "Files are okay" << endl;}
+       else {cout << "File is okay" << endl;}
  
 //  gStyle->SetOptTitle(0); //No title for histograms
  // gStyle->SetOptStat(0);
