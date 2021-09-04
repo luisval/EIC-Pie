@@ -40,7 +40,7 @@ TFile *file2 = TFile::Open("G4EICDetector_out_hq2_e_0.5-1GeV.root");
 ////////////////////////////////Finding the e efficiencicy////////////////////////////////////////////////
  Double_t a = 0.0;
  Double_t fraction =100;
- Double_t epsilon = 0.01; 
+ Double_t epsilon = 0.05; 
  Int_t totalIntegral = h1_EMCal_Ep->Integral(h1_EMCal_Ep->FindFixBin(0), h1_EMCal_Ep->FindFixBin(2));
 
  Double_t eff10 = 0.1;
@@ -74,7 +74,7 @@ TFile *file2 = TFile::Open("G4EICDetector_out_hq2_e_0.5-1GeV.root");
                bBin =bBin+1;
                fraction =  h1_EMCal_Ep->Integral(h1_EMCal_Ep->FindFixBin(a),bBin, "") /totalIntegral;
 
-                                cout <<"ep : " << Ep << endl;
+                            //    cout <<"ep : " << Ep << endl;
                                 // cout <<"efficiency 0.1: " << fraction << endl;
 
               } 
@@ -85,7 +85,7 @@ TFile *file2 = TFile::Open("G4EICDetector_out_hq2_e_0.5-1GeV.root");
                bBin =bBin+1;
                fraction =  h1_EMCal_Ep->Integral(h1_EMCal_Ep->FindFixBin(a),bBin, "") /totalIntegral;  
 
-                         //    cout <<"efficiency  0.2: " << fraction << endl;
+                           //  cout <<"efficiency  0.2: " << fraction << endl;
               } 
 
               ep20= h1_EMCal_Ep->GetXaxis()->GetBinCenter(bBin);
@@ -143,6 +143,12 @@ TFile *file2 = TFile::Open("G4EICDetector_out_hq2_e_0.5-1GeV.root");
               } 
               ep95= h1_EMCal_Ep->GetXaxis()->GetBinCenter(bBin);
 
+
+             // double check90 = h1_EMCal_Ep->Integral(h1_EMCal_Ep->FindFixBin(0.49), h1_EMCal_Ep->FindFixBin(2));
+              float check90 = h1_EMCal_Ep->Integral(h1_EMCal_Ep->FindFixBin(ep10), h1_EMCal_Ep->FindFixBin(2));
+
+              double check90per = check90/totalIntegral;
+
                cout<<"ep10: "<<ep10<<endl; 
                cout<<"ep20: "<<ep20<<endl; 
                cout<<"ep30: "<<ep30<<endl; 
@@ -157,12 +163,14 @@ TFile *file2 = TFile::Open("G4EICDetector_out_hq2_e_0.5-1GeV.root");
                cout<<"fraction: "<<fraction<<endl;  
                cout<<"bBin: "<<bBin<<endl; 
                cout<<"epsilon: "<<epsilon<<endl;   
-               cout<<"bin number : "<<h1_EMCal_Ep->FindFixBin(bBin)<<endl;  
+
                cout<<"totalIntegral: "<<totalIntegral<<endl;  
+        
+               cout<<"check90: "<<check90<<endl; 
+               cout<<"check90: "<<check90per<<endl; 
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
   /////////////////////////////////////////////////////////////////////////////////////////////////             
 
