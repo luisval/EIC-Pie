@@ -14,8 +14,8 @@
 Int_t efficiency()
 {
 
-TFile *file1 = TFile::Open("G4EICDetector_out_e_manybins.root");
-TFile *file2 = TFile::Open("G4EICDetector_out_pi_manybins.root");
+TFile *file1 = TFile::Open("G4EICDetector_out_hq2_e_0.5-1GeV.root");
+TFile *file2 = TFile::Open("G4EICDetector_out_hq2_e_0.5-1GeV.root");
 
        if (file1 && file2->IsZombie()) { cout << "Error opening a file" << endl;
        exit(-1);} 
@@ -31,28 +31,10 @@ TFile *file2 = TFile::Open("G4EICDetector_out_pi_manybins.root");
        // h1_EMCal_Ep->SetMarkerStyle(20);
        h1_EMCal_Ep->SetMarkerColor(1);
 
-
-  TH1F *h2_EMCal_Ep = (TH1F*)file2->Get("h_EMCal_Ep");
-        h2_EMCal_Ep->GetXaxis()->SetTitle("EMCal E/p");
-        h2_EMCal_Ep->GetYaxis()->SetTitle("Counts");
-        h2_EMCal_Ep->SetMarkerStyle(kOpenCircle);
-        // h2_EMCal_Ep->SetMarkerStyle(24);
-        h2_EMCal_Ep->SetMarkerColor(46);
-
-  TH1F *he_eff = new TH1F("he_eff","Electrons efficiency",40,0,4);
-        he_eff->SetFillColorAlpha(40, 0.35);
-        he_eff->SetXTitle("");
-        he_eff->SetYTitle("Counts");
-        he_eff->GetXaxis()->CenterTitle(true);
-        he_eff->GetYaxis()->CenterTitle(true);
-        he_eff->GetYaxis()->SetTitleOffset(1.2);  
-     
         Int_t nbinsh1 = h1_EMCal_Ep->Integral();
-        Int_t nbinsh2 = h2_EMCal_Ep->Integral();
-        Int_t nbintstotal = nbinsh1+nbinsh2;
+        Int_t nbintstotal = nbinsh1;
 
         cout <<"nbinsh1: " << nbinsh1 << endl;
-        cout <<"nbinsh2: " << nbinsh2 << endl;
         cout <<"Total bins: " << nbintstotal << endl;
 
 ////////////////////////////////Finding the e efficiencicy////////////////////////////////////////////////
@@ -90,14 +72,22 @@ TFile *file2 = TFile::Open("G4EICDetector_out_pi_manybins.root");
 
               while (   TMath::Abs(fraction-eff10) > epsilon  && bBin < h1_EMCal_Ep->GetNbinsX()  ) {
                bBin =bBin+1;
-               fraction =  h1_EMCal_Ep->Integral(h1_EMCal_Ep->FindFixBin(a),bBin, "") /totalIntegral;    
+               fraction =  h1_EMCal_Ep->Integral(h1_EMCal_Ep->FindFixBin(a),bBin, "") /totalIntegral;
+
+                                cout <<"ep : " << Ep << endl;
+                                // cout <<"efficiency 0.1: " << fraction << endl;
+
               } 
+
               ep10= h1_EMCal_Ep->GetXaxis()->GetBinCenter(bBin);
 
               while (   TMath::Abs(fraction-eff20) > epsilon  && bBin < h1_EMCal_Ep->GetNbinsX()  ) {
                bBin =bBin+1;
-               fraction =  h1_EMCal_Ep->Integral(h1_EMCal_Ep->FindFixBin(a),bBin, "") /totalIntegral;    
+               fraction =  h1_EMCal_Ep->Integral(h1_EMCal_Ep->FindFixBin(a),bBin, "") /totalIntegral;  
+
+                         //    cout <<"efficiency  0.2: " << fraction << endl;
               } 
+
               ep20= h1_EMCal_Ep->GetXaxis()->GetBinCenter(bBin);
 
               while (   TMath::Abs(fraction-eff30) > epsilon  && bBin < h1_EMCal_Ep->GetNbinsX()  ) {
@@ -142,15 +132,16 @@ TFile *file2 = TFile::Open("G4EICDetector_out_pi_manybins.root");
               } 
               ep90= h1_EMCal_Ep->GetXaxis()->GetBinCenter(bBin);
 
+               //   cout <<"efficiency 0.9: " << fraction << endl;
+
+
               while (   TMath::Abs(fraction-eff95) > epsilon  && bBin < h1_EMCal_Ep->GetNbinsX()  ) {
                bBin =bBin+1;
-               fraction =  h1_EMCal_Ep->Integral(h1_EMCal_Ep->FindFixBin(a),bBin, "") /totalIntegral;    
+               fraction =  h1_EMCal_Ep->Integral(h1_EMCal_Ep->FindFixBin(a),bBin, "") /totalIntegral;  
+                //    cout <<"efficiency 0.95: " << fraction << endl;
+
               } 
               ep95= h1_EMCal_Ep->GetXaxis()->GetBinCenter(bBin);
-
-
-               cout<<"eff10: "<<eff10<<endl; 
-               cout<<"eff90: "<<eff90<<endl; 
 
                cout<<"ep10: "<<ep10<<endl; 
                cout<<"ep20: "<<ep20<<endl; 
@@ -169,7 +160,11 @@ TFile *file2 = TFile::Open("G4EICDetector_out_pi_manybins.root");
                cout<<"bin number : "<<h1_EMCal_Ep->FindFixBin(bBin)<<endl;  
                cout<<"totalIntegral: "<<totalIntegral<<endl;  
 
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////             
 
   TCanvas *c1 = new TCanvas("c12","EMCal E/p");
   gStyle->SetOptStat(false);
@@ -178,7 +173,6 @@ TFile *file2 = TFile::Open("G4EICDetector_out_pi_manybins.root");
   c1->SetFillColor(0);
   
     h1_EMCal_Ep->Draw();
-    h2_EMCal_Ep->Draw("same");
 
   TLegend *leg = new TLegend(0.7,0.6,0.92,0.89);
   leg->SetTextFont(62);
@@ -189,10 +183,12 @@ TFile *file2 = TFile::Open("G4EICDetector_out_pi_manybins.root");
   leg->SetFillStyle(1001);
   leg->AddEntry("","Particle","");
   leg->AddEntry("h1_EMCal_Ep","e^{-}","lep");
-  leg->AddEntry("h2_EMCal_Ep","#pi^{-}","lep");
   leg->Draw();
   c1->SaveAs("Ep_pie.pdf");
   
+
+
+
  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   cout<<"End of the program. Gracias"<<endl;
   return 0;  
