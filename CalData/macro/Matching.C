@@ -17,10 +17,9 @@ void Matching::Loop(){
   if (fChain == 0) return;
   Long64_t nentries = fChain->GetEntriesFast();
    
-//  TFile* fout = new TFile(Form("G4EICDetector_out.root"),"RECREATE");
+    // TFile* fout = new TFile(Form("G4EICDetector_out.root"),"RECREATE");
 
-   TFile *fout = new TFile("G4EICDetector_out_low__10-20GeV.root","RECREATE");
-
+   TFile *fout = new TFile("Epcut_G4EICDetector_out_hq2_pi_0.5-1GeV.root","RECREATE");
 
   TH1F *h_dRmin = new TH1F("h_dRmin","dRmin",40,0,4);
         h_dRmin->SetFillColorAlpha(40, 0.35);
@@ -114,7 +113,7 @@ void Matching::Loop(){
       nb = fChain->GetEntry(jentry);   nbytes += nb;
       // if (Cut(ientry) < 0) continue;
 
-       if( (m_eventCounter % 1000) ==0 ) cout << "Event number = "<< m_eventCounter << endl;
+      // if( (m_eventCounter % 1000) ==0 ) cout << "Event number = "<< m_eventCounter << endl;
        m_eventCounter++;
 
 
@@ -135,15 +134,15 @@ void Matching::Loop(){
           // cout << "towenergy size:  " << towenergy->size() << endl;
           // cout << "tr_CEMC_eta size:  " << tr_CEMC_eta->size() << endl;
           
-        if(track_eta->at(j)>1.1 || track_eta->at(j)<-1.5) continue; //cut pseudorapidity for low q2
-      //  if(abs(track_eta->at(j))>1.0) continue; //cut pseudorapidity for high q2
+      //  if(track_eta->at(j)>1.1 || track_eta->at(j)<-1.5) continue; //cut pseudorapidity for low q2
+        if(abs(track_eta->at(j))>1.0) continue; //cut pseudorapidity for high q2
 
          //  cout << "track eta:  " << track_eta->at(j)<< endl;
         
-           if(abs(track_pt->at(j))<10) continue;
-           if(abs(track_pt->at(j))>20) continue;
+           if(abs(track_pt->at(j))<0.5) continue;
+           if(abs(track_pt->at(j))>1.0) continue;
          // if(abs(track_pt->at(j))<10) continue;
-         // cout << "track pt:  " << track_pt->at(j)<< endl;
+       //   cout << "track pt:  " << track_pt->at(j)<< endl;
 
          // dR and resolutions
          int idx_dR, idx_dEta, idx_dPhi, dummy, idx_dR_tow, idx_dR_track;
@@ -155,10 +154,10 @@ void Matching::Loop(){
          dRmin_th(track_eta->at(j), track_phi->at(j), idx_dR_track);
 
          //   if (truth_pid->at(idx_dR_track)!=11) continue; //Turn on for electrons
-        //  if (truth_pid->at(idx_dR_track)!=-211) continue; //Turn on for pions
-            if (truth_pid->at(idx_dR_track)!=-321) continue; //Turn on for kaons
+          if (truth_pid->at(idx_dR_track)!=-211) continue; //Turn on for pions
+        //    if (truth_pid->at(idx_dR_track)!=-321) continue; //Turn on for kaons
 
-           cout << "truth id:  " << truth_pid->at(idx_dR_track) << endl;
+         //  cout << "truth id:  " << truth_pid->at(idx_dR_track) << endl;
 
         // cout << "tr_CEMC_eta:  " << tr_CEMC_eta->at(j) << endl;
         // cout << "idx_dR:  " << idx_dR << endl;
@@ -167,6 +166,16 @@ void Matching::Loop(){
       //   cout << "dRmin: " << dRmin(tr_CEMC_eta->at(j), tr_CEMC_phi->at(j), idx_dR) << endl;
 
          float Ep = clus_energy->at(idx_dR)/track_p->at(j);
+
+        if (Ep<0.49) continue; //Turn on for 0.5-1 GeV
+       //  if (Ep<0.29) continue; //Turn on for 1-2 GeV
+       // if (Ep<0.18) continue; //Turn on for 2-5 GeV
+      //   if (Ep<0.09) continue; //Turn on for 5-10 GeV
+
+
+         cout << "Ep:  " << Ep << endl;
+
+
          h_EMCal_Ep->Fill(Ep);
          h_EMCal_E->Fill(clus_energy->at(idx_dR));
 
@@ -189,6 +198,8 @@ void Matching::Loop(){
       //    h_track_p->Fill(track_p->at(j)); 
           h_track_pt->Fill(track_pt->at(j)); 
      //     h_track_eta->Fill(track_eta->at(j)); 
+
+           cout << "truth id:  " << truth_pid->at(idx_dR_track) << endl;
 
        } //End of tracks loop
                                
