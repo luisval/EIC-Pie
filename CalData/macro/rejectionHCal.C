@@ -11,7 +11,7 @@
 
 Int_t rejectionHCal()
 {
-/*
+
 TFile *file1 = TFile::Open("Epcut_G4EICDetector_out_hq2_pi_0.5-1GeV.root");
 TFile *file2 = TFile::Open("Epcut_G4EICDetector_out_hq2_pi_1-2GeV.root");
 TFile *file3 = TFile::Open("Epcut_G4EICDetector_out_hq2_pi_2-5GeV.root");
@@ -22,8 +22,8 @@ TFile *file01 = TFile::Open("G4EICDetector_out_hq2_pi_0.5-1GeV.root");
 TFile *file02 = TFile::Open("G4EICDetector_out_hq2_pi_1-2GeV.root");
 TFile *file03 = TFile::Open("G4EICDetector_out_hq2_pi_2-5GeV.root");
 TFile *file04 = TFile::Open("G4EICDetector_out_hq2_pi_5-10GeV.root"); 
-*/
 
+/*
 TFile *file1 = TFile::Open("Epcut_G4EICDetector_out_hq2_k_0.5-1.0GeV.root");
 TFile *file2 = TFile::Open("Epcut_G4EICDetector_out_hq2_k_1.0-2.0GeV.root");
 TFile *file3 = TFile::Open("Epcut_G4EICDetector_out_hq2_k_2.0-5.0GeV.root");
@@ -34,6 +34,7 @@ TFile *file01 = TFile::Open("G4EICDetector_out_hq2_k_0.5-1GeV.root");
 TFile *file02 = TFile::Open("G4EICDetector_out_hq2_k_1-2GeV.root");
 TFile *file03 = TFile::Open("G4EICDetector_out_hq2_k_2-5GeV.root");
 TFile *file04 = TFile::Open("G4EICDetector_out_hq2_k_5-10GeV.root"); 
+*/
 
 /*
 TFile *file1 = TFile::Open("G4EICDetector_out_hp_pi_1_5GeV.root");
@@ -212,10 +213,10 @@ TCanvas *c2 = new TCanvas("c5","rejection ",200,10,500,300);
   // gr4->SetLineWidth(4);
    gr4->SetFillStyle(0);
 
-  gr1->SetPoint(1,0.001,rej1_pi);
-  gr2->SetPoint(2,0.002,rej2_pi);
-  gr3->SetPoint(3,0.004,rej3_pi);
-  gr4->SetPoint(4,0.006,rej4_pi);
+  gr1->SetPoint(1,0.1,rej1_pi);
+  gr2->SetPoint(2,0.2,rej2_pi);
+  gr3->SetPoint(3,0.3,rej3_pi);
+  gr4->SetPoint(4,0.4,rej4_pi);
 
   c2->BuildLegend();
 
