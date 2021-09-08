@@ -11,7 +11,7 @@
 
 Int_t rejectionHCal()
 {
-
+/*
 TFile *file1 = TFile::Open("Epcut_G4EICDetector_out_hq2_pi_0.5-1GeV.root");
 TFile *file2 = TFile::Open("Epcut_G4EICDetector_out_hq2_pi_1-2GeV.root");
 TFile *file3 = TFile::Open("Epcut_G4EICDetector_out_hq2_pi_2-5GeV.root");
@@ -22,13 +22,18 @@ TFile *file01 = TFile::Open("G4EICDetector_out_hq2_pi_0.5-1GeV.root");
 TFile *file02 = TFile::Open("G4EICDetector_out_hq2_pi_1-2GeV.root");
 TFile *file03 = TFile::Open("G4EICDetector_out_hq2_pi_2-5GeV.root");
 TFile *file04 = TFile::Open("G4EICDetector_out_hq2_pi_5-10GeV.root"); 
-
-/*
-TFile *file1 = TFile::Open("Epcut_G4EICDetector_out_hq2_k_0.5-1GeV.root");
-TFile *file2 = TFile::Open("Epcut_G4EICDetector_out_hq2_k_1-2GeV.root");
-TFile *file3 = TFile::Open("Epcut_G4EICDetector_out_hq2_k_2-5GeV.root");
-TFile *file4 = TFile::Open("Epcut_G4EICDetector_out_hq2_k_5-10GeV.root"); 
 */
+
+TFile *file1 = TFile::Open("Epcut_G4EICDetector_out_hq2_k_0.5-1.0GeV.root");
+TFile *file2 = TFile::Open("Epcut_G4EICDetector_out_hq2_k_1.0-2.0GeV.root");
+TFile *file3 = TFile::Open("Epcut_G4EICDetector_out_hq2_k_2.0-5.0GeV.root");
+TFile *file4 = TFile::Open("Epcut_G4EICDetector_out_hq2_k_5.0-10.0GeV.root"); 
+
+
+TFile *file01 = TFile::Open("G4EICDetector_out_hq2_k_0.5-1GeV.root");
+TFile *file02 = TFile::Open("G4EICDetector_out_hq2_k_1-2GeV.root");
+TFile *file03 = TFile::Open("G4EICDetector_out_hq2_k_2-5GeV.root");
+TFile *file04 = TFile::Open("G4EICDetector_out_hq2_k_5-10GeV.root"); 
 
 /*
 TFile *file1 = TFile::Open("G4EICDetector_out_hp_pi_1_5GeV.root");
@@ -148,14 +153,14 @@ TFile *file4 = TFile::Open("G4EICDetector_out_low_pi_1-20GeV.root");
 
         // h1_HCal_Ep->Scale(1./(nbintstotal));
 
-TCanvas *c2 = new TCanvas("c5","#pi^{-} rejection ",200,10,500,300);
+TCanvas *c2 = new TCanvas("c5","rejection ",200,10,500,300);
   TGraph* gr1 = new TGraph();
   TGraph* gr2 = new TGraph();
   TGraph* gr3 = new TGraph();
   TGraph* gr4 = new TGraph();
 
   TMultiGraph *mg = new TMultiGraph();
-      mg->SetTitle("E_{min} vs rejection;E_{min}(GeV); #pi^{-} rejection");
+      mg->SetTitle("E_{min} vs rejection;E_{min}(GeV); rejection");
       mg->GetXaxis()->SetLimits(0.1, 1.02);
       mg->GetXaxis()->SetTitleOffset(1.2);
       mg->GetYaxis()->SetTitleOffset(1.2);
