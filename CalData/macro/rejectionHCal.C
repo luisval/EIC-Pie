@@ -207,10 +207,10 @@ TCanvas *c2 = new TCanvas("c5","#pi^{-} rejection ",200,10,500,300);
   // gr4->SetLineWidth(4);
    gr4->SetFillStyle(0);
 
-  gr1->SetPoint(1,1.0,rej1_pi);
-  gr2->SetPoint(2,2.0,rej2_pi);
-  gr3->SetPoint(3,5.0,rej3_pi);
-  gr4->SetPoint(4,10.0,rej4_pi);
+  gr1->SetPoint(1,0.001,rej1_pi);
+  gr2->SetPoint(2,0.002,rej2_pi);
+  gr3->SetPoint(3,0.004,rej3_pi);
+  gr4->SetPoint(4,0.006,rej4_pi);
 
   c2->BuildLegend();
 
