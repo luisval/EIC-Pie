@@ -17,9 +17,9 @@ void Matching::Loop(){
   if (fChain == 0) return;
   Long64_t nentries = fChain->GetEntriesFast();
    
-    // TFile* fout = new TFile(Form("G4EICDetector_out.root"),"RECREATE");
+     TFile* fout = new TFile(Form("G4EICDetector_out.root"),"RECREATE");
 
-   TFile *fout = new TFile("Epcut_G4EICDetector_out_hq2_pi_0.5-1GeV.root","RECREATE");
+ //  TFile *fout = new TFile("revisited_Epcut_G4EICDetector_out_hq2_k_5.0-10.0GeV.root","RECREATE");
 
   TH1F *h_dRmin = new TH1F("h_dRmin","dRmin",40,0,4);
         h_dRmin->SetFillColorAlpha(40, 0.35);
@@ -36,6 +36,14 @@ void Matching::Loop(){
         h_EMCal_E->GetXaxis()->CenterTitle(true);
         h_EMCal_E->GetYaxis()->CenterTitle(true);
         h_EMCal_E->GetYaxis()->SetTitleOffset(1.2);
+
+  TH1F *h_truth_p = new TH1F("h_truth_p","truth p",40,0,20);
+        h_truth_p->SetFillColorAlpha(40, 0.35);
+        h_truth_p->SetXTitle("truth_p");
+        h_truth_p->SetYTitle("Counts");
+        h_truth_p->GetXaxis()->CenterTitle(true);
+        h_truth_p->GetYaxis()->CenterTitle(true);
+        h_truth_p->GetYaxis()->SetTitleOffset(1.2);
 
   TH1F *h_track_p = new TH1F("h_track_p","Track p",40,0,20);
         h_track_p->SetFillColorAlpha(40, 0.35);
@@ -100,7 +108,12 @@ void Matching::Loop(){
         h_dRmin_tow->SetYTitle("Counts");
         h_dRmin_tow->GetXaxis()->CenterTitle(true);
         h_dRmin_tow->GetYaxis()->CenterTitle(true);
-        h_dRmin_tow->GetYaxis()->SetTitleOffset(1.2);        
+        h_dRmin_tow->GetYaxis()->SetTitleOffset(1.2);     
+
+  TH2D *h_truth_p_track_p  = new TH2D("track_truth_p","track_p vs truth_p",100,0,20,100,0,20);
+        h_truth_p_track_p->SetXTitle("track_p (GeV)");
+        h_truth_p_track_p->SetYTitle("truth_p (GeV)");       
+         
          
    Long64_t nbytes = 0, nb = 0;
 
@@ -116,7 +129,13 @@ void Matching::Loop(){
       // if( (m_eventCounter % 1000) ==0 ) cout << "Event number = "<< m_eventCounter << endl;
        m_eventCounter++;
 
-
+/*
+         if (truth_pt->empty()) continue;
+         //Truth loop
+         for (int j = 0; j < truth_pt->size(); ++j){ 
+                   h_truth_p->Fill(truth_p->at(j)); 
+          }
+*/
        if(track_p->empty()) continue;
        if(track_pt->empty()) continue;
        if(clus_energy->empty()) continue;
@@ -129,18 +148,14 @@ void Matching::Loop(){
        //Tracks loop
        for (int j = 0; j < track_pt->size(); ++j){
 
-          // cout << "track size:  " << track_pt->size() << endl;
-          // cout << "clus energy size:  " << clus_energy->size() << endl;
-          // cout << "towenergy size:  " << towenergy->size() << endl;
-          // cout << "tr_CEMC_eta size:  " << tr_CEMC_eta->size() << endl;
-          
+
       //  if(track_eta->at(j)>1.1 || track_eta->at(j)<-1.5) continue; //cut pseudorapidity for low q2
         if(abs(track_eta->at(j))>1.0) continue; //cut pseudorapidity for high q2
-
          //  cout << "track eta:  " << track_eta->at(j)<< endl;
+
         
-           if(abs(track_pt->at(j))<0.5) continue;
-           if(abs(track_pt->at(j))>1.0) continue;
+       //    if(abs(track_pt->at(j))<5.0) continue;
+      //     if(abs(track_pt->at(j))>10.0) continue;
          // if(abs(track_pt->at(j))<10) continue;
        //   cout << "track pt:  " << track_pt->at(j)<< endl;
 
@@ -150,12 +165,15 @@ void Matching::Loop(){
           if (tr_CEMC_eta->at(j)==9999.) continue;
        //   if (truth_eta->at(j)==99999999.) continue;
       //    if (track_eta->at(j)==99999999.) continue;
+
+          if(dRmin_th(track_eta->at(j), track_phi->at(j),idx_dR_track)>0.01) continue;
+          //cout << "dR:  " << dRmin_th(track_eta->at(j), track_phi->at(j),idx_dR_track) << endl;
                
          dRmin_th(track_eta->at(j), track_phi->at(j), idx_dR_track);
 
-         //   if (truth_pid->at(idx_dR_track)!=11) continue; //Turn on for electrons
-          if (truth_pid->at(idx_dR_track)!=-211) continue; //Turn on for pions
-        //    if (truth_pid->at(idx_dR_track)!=-321) continue; //Turn on for kaons
+        //    if (truth_pid->at(idx_dR_track)!=11) continue; //Turn on for electrons
+        //  if (truth_pid->at(idx_dR_track)!=-211) continue; //Turn on for pions
+         //   if (truth_pid->at(idx_dR_track)!=-321) continue; //Turn on for kaons
 
          //  cout << "truth id:  " << truth_pid->at(idx_dR_track) << endl;
 
@@ -167,14 +185,12 @@ void Matching::Loop(){
 
          float Ep = clus_energy->at(idx_dR)/track_p->at(j);
 
-        if (Ep<0.49) continue; //Turn on for 0.5-1 GeV
-       //  if (Ep<0.29) continue; //Turn on for 1-2 GeV
-       // if (Ep<0.18) continue; //Turn on for 2-5 GeV
+      //  if (Ep<0.49) continue; //Turn on for 0.5-1 GeV
+      //   if (Ep<0.29) continue; //Turn on for 1-2 GeV
+      //  if (Ep<0.18) continue; //Turn on for 2-5 GeV
       //   if (Ep<0.09) continue; //Turn on for 5-10 GeV
 
-
-         cout << "Ep:  " << Ep << endl;
-
+      //   cout << "Ep:  " << Ep << endl;
 
          h_EMCal_Ep->Fill(Ep);
          h_EMCal_E->Fill(clus_energy->at(idx_dR));
@@ -182,6 +198,11 @@ void Matching::Loop(){
       //   if(Ep < 0.2){ 
           h_track_eta->Fill(track_eta->at(j));
           h_track_p->Fill(track_p->at(j)); 
+
+          h_truth_p->Fill(truth_p->at(j)); 
+
+          h_truth_p_track_p->Fill(track_p->at(j),truth_p->at(idx_dR_track));
+
        //  }
 
          dRmin_tow(clus_eta->at(idx_dR), clus_phi->at(idx_dR), idx_dR_tow );
@@ -199,7 +220,7 @@ void Matching::Loop(){
           h_track_pt->Fill(track_pt->at(j)); 
      //     h_track_eta->Fill(track_eta->at(j)); 
 
-           cout << "truth id:  " << truth_pid->at(idx_dR_track) << endl;
+        //   cout << "truth id:  " << truth_pid->at(idx_dR_track) << endl;
 
        } //End of tracks loop
                                
@@ -218,6 +239,9 @@ h_track_p->Write();
 h_track_pt->Write();
 h_track_eta->Write();
 
+h_truth_p->Write();
+
+h_truth_p_track_p->Write();
 /*
 TCanvas *c0 = new TCanvas();
    c0->SetLogy();  
