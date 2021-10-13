@@ -22,9 +22,13 @@
 #include <g4vertex/GlobalVertexMap.h>
 #include <trackbase_historic/SvtxTrack.h>
 #include <trackbase_historic/SvtxTrackMap.h>
+#include <trackbase_historic/SvtxTrack_FastSim.h>
 #include <trackbase_historic/SvtxVertex.h>
 #include <trackbase_historic/SvtxVertexMap.h>
 
+//PID includes
+#include <eicpidbase/EICPIDParticle.h>
+#include <eicpidbase/EICPIDParticleContainer.h>
 
 /// Truth evaluation includes
 #include <g4eval/SvtxEvalStack.h>
@@ -459,6 +463,14 @@ m_towphi.clear();
 
    // if(trackmap) cout << "trackmap size" << trackmap->size() << endl;
 
+   EICPIDParticleContainer *pidcontainer = findNode::getClass<EICPIDParticleContainer>(topNode, "EICPIDParticleMap");
+   
+   if (Verbosity() > 1 and pidcontainer == nullptr)
+   {
+     cout << "EICPIDParticleContainer named EICPIDParticleMap does not exist. Skip saving PID info" << endl;
+   }
+    
+
   if (!trackmap){
      cout << PHWHERE
           << "SvtxTrackMap node is missing, can't collect tracks"
@@ -515,40 +527,21 @@ m_towphi.clear();
     m_tr_y   .push_back(track->get_y());
     m_tr_z   .push_back(track->get_z());
 
+     /// Ensure that the reco track is a fast sim track
+    SvtxTrack_FastSim *temp = dynamic_cast<SvtxTrack_FastSim *>(iter->second);
+    if (!temp)
+    {
+      if (Verbosity() > 0)
+        std::cout << "Skipping non fast track sim object..." << std::endl;
+      continue;
+    }
+
+  }
+
  ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////Tracks calorimeters extrapolation////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
- /////////////////////////CEMCal tracks extrapolation///////////////////////////
-/*
-    for (SvtxTrack::ConstStateIter trkstates = track->begin_states(); trkstates != track->end_states(); ++trkstates){
-
-   //  if(trkstates->second->get_name() == "CLUSTER_CEMC"){
- 
-     if(trkstates->second->get_name() == "CEMC"){
-
-
-      double CEMC_x = trkstates->second->get_pos(0);
-      double CEMC_y = trkstates->second->get_pos(1);
-      double CEMC_z = trkstates->second->get_pos(2);
- 
-      m_tr_CEMC_eta .push_back(asinh(CEMC_z / sqrt(CEMC_x * CEMC_x + CEMC_y * CEMC_y)));
-      m_tr_CEMC_phi .push_back(atan2(CEMC_y, CEMC_x));
- 
-      m_tr_CEMC_x .push_back(trkstates->second->get_pos(0));
-      m_tr_CEMC_y .push_back(trkstates->second->get_pos(1));
-      m_tr_CEMC_z .push_back(trkstates->second->get_pos(2));
-      m_tr_CEMC_px .push_back(trkstates->second->get_mom(0));
-      m_tr_CEMC_py .push_back(trkstates->second->get_mom(1));
-      m_tr_CEMC_pz .push_back(trkstates->second->get_mom(2));
-
-          cout << "CEMC extrapolation " << endl; 
-     }
-  }  
- }*/ 
-/////////////////////////////////////////////////////////////////////////////////////// 
-
-  }
 
 ////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////Calorimeters//////////////////////////////////////////
@@ -559,18 +552,17 @@ m_towphi.clear();
  /// Get the raw cluster container
   /// Note: other cluster containers exist as well. Check out the node tree when
   /// you run a simulation
-  RawClusterContainer *clusters = findNode::getClass<RawClusterContainer>(topNode, "CLUSTER_CEMC");
+  RawClusterContainer *clusters = findNode::getClass<RawClusterContainer>(topNode, "CLUSTER_BECAL");
 
   if (!clusters)
   {
     cout << PHWHERE
-         << "EMCal cluster node is missing, can't collect EMCal clusters"
+         << "Becal cluster node is missing, can't collect Becal clusters"
          << endl;
     return;
   }
 
  // if(clusters) cout << "clusters size" << clusters->size() << endl;
-
 
 
   /// Get the global vertex to determine the appropriate pseudorapidity of the clusters
@@ -757,9 +749,9 @@ for (SvtxTrackMap::Iter iter = trackmap->begin(); iter != trackmap->end(); ++ite
 
     for (SvtxTrack::ConstStateIter trkstates = track->begin_states(); trkstates != track->end_states(); ++trkstates){
        
-     //   cout << "trkstates: " << trkstates->second->get_name() << endl;
+        cout << "trkstates: " << trkstates->second->get_name() << endl;
    
-      if(trkstates->second->get_name() == "CEMC"){
+      if(trkstates->second->get_name() == "BECAL"){
  
       double CEMC_x = trkstates->second->get_pos(0);
       double CEMC_y = trkstates->second->get_pos(1);
@@ -978,12 +970,12 @@ void CalData::getEMCalClusters(PHCompositeNode *topNode)
   /// Get the raw cluster container
   /// Note: other cluster containers exist as well. Check out the node tree when
   /// you run a simulation
-  RawClusterContainer *clusters = findNode::getClass<RawClusterContainer>(topNode, "CLUSTER_CEMC");
+  RawClusterContainer *clusters = findNode::getClass<RawClusterContainer>(topNode, "CLUSTER_BECAL");
 
   if (!clusters)
   {
     cout << PHWHERE
-         << "EMCal cluster node is missing, can't collect EMCal clusters"
+         << "Becal cluster node is missing, can't collect becal clusters"
          << endl;
     return;
   }
