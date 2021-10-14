@@ -29,7 +29,7 @@ R__LOAD_LIBRARY(/home/luis/software/nuclearexp/EIC/clean/July2021Concept/src/ins
 
 
 int Fun4All_G4_EICDetector(
-    const int nEvents = 1,
+    const int nEvents = 1000,
     const string &inputFile = "/home/luis/software/nuclearexp/data/ep_10x100highq2/ep_noradcor.10x100highq_run001.root",
 //    const string &inputFile = "https://www.phenix.bnl.gov/WWW/publish/phnxbld/sPHENIX/files/sPHENIX_G4Hits_sHijing_9-11fm_00000_00010.root",
     const string &outputFile = "G4EICDetector.root",
