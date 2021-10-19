@@ -8,7 +8,7 @@
 #include "CalData.h"
 
 /// Cluster/Calorimeter includes
-#include <calobase/RawCluster.h>
+#include <calobase/RawClusterv1.h>
 #include <calobase/RawClusterContainer.h>
 #include <calobase/RawClusterUtility.h>
 #include <calobase/RawTower.h>
@@ -562,11 +562,14 @@ m_towphi.clear();
     return;
   }
 
- // if(clusters) cout << "clusters size" << clusters->size() << endl;
+  if(clusters) cout << "clusters size" << clusters->size() << endl;
 
 
   /// Get the global vertex to determine the appropriate pseudorapidity of the clusters
-  GlobalVertexMap *vertexmap = findNode::getClass<GlobalVertexMap>(topNode, "GlobalVertexMap");
+
+   SvtxVertexMap *vertexmap = findNode::getClass<SvtxVertexMap>(topNode, "SvtxVertexMap");
+
+  //GlobalVertexMap *vertexmap = findNode::getClass<GlobalVertexMap>(topNode, "GlobalVertexMap");
   if (!vertexmap)
   {
     cout << "CalData::getEmcalClusters - Fatal Error - GlobalVertexMap node is missing. Please turn on the do_global flag in the main macro in order to reconstruct the global vertex." << endl;
@@ -581,7 +584,10 @@ m_towphi.clear();
     return;
   }
 
-  GlobalVertex *vtx = vertexmap->begin()->second;
+  SvtxVertex* vtx = vertexmap->get(0);
+
+  //SvtxVertex *vtx = vertexmap->begin()->second;
+//  GlobalVertex *vtx = vertexmap->begin()->second;
   if (vtx == nullptr)
     return;
 
@@ -597,21 +603,30 @@ m_towphi.clear();
     /// Get this cluster
     const RawCluster *cluster = clusIter->second;
 
+
+  double m_ceta = getEta(cluster->get_r(),cluster->get_z()-vtx->get_z());
+  double m_cphi = cluster->get_phi();
+  
     /// Get cluster characteristics
     /// This helper class determines the photon characteristics
     /// depending on the vertex position
     /// This is important for e.g. eta determination and E_T determination
-    CLHEP::Hep3Vector vertex(vtx->get_x(), vtx->get_y(), vtx->get_z());
-    CLHEP::Hep3Vector E_vec_cluster = RawClusterUtility::GetECoreVec(*cluster, vertex);
+  //  CLHEP::Hep3Vector vertex(vtx->get_x(), vtx->get_y(), vtx->get_z());
+  //  CLHEP::Hep3Vector E_vec_cluster = RawClusterUtility::GetECoreVec(*cluster, vertex);
+   // cout << "vx:" << vtx->get_x() << "vy:" << vtx->get_y() << "vxz" << vtx->get_z()<< endl;
+   // cout << "E:" << cluster->get_energy() << endl;
 
-   if (E_vec_cluster.perp() < m_mincluspt) continue; //cut in pt, skip lower than 0.25 GeV ~ stupid noise
-    //cout << "pt:" << E_vec_cluster.perp() << endl;
+   // cout << "ecore:" << (*cluster).get_ecore() << "y:" << cluster->get_y() << "z" << cluster->get_z()<< endl;
 
-   m_clusenergy .push_back(E_vec_cluster.mag());
-   m_cluseta .push_back(E_vec_cluster.pseudoRapidity());
-   m_clustheta .push_back(E_vec_cluster.getTheta());
-   m_cluspt .push_back(E_vec_cluster.perp());
-   m_clusphi .push_back(E_vec_cluster.getPhi());
+ //  if (E_vec_cluster.perp() < m_mincluspt) continue; //cut in pt, skip lower than 0.25 GeV ~ stupid noise
+   // cout << "pt:" << E_vec_cluster.perp() << endl;
+
+   m_clusenergy .push_back(cluster->get_energy());
+   m_cluseta .push_back(m_ceta);
+ //  m_clustheta .push_back(E_vec_cluster.getTheta());
+ //  m_cluspt .push_back(E_vec_cluster.perp());
+   m_clusphi .push_back(m_cphi);
+
 
   }
 
@@ -749,7 +764,7 @@ for (SvtxTrackMap::Iter iter = trackmap->begin(); iter != trackmap->end(); ++ite
 
     for (SvtxTrack::ConstStateIter trkstates = track->begin_states(); trkstates != track->end_states(); ++trkstates){
        
-        cout << "trkstates: " << trkstates->second->get_name() << endl;
+      //  cout << "trkstates: " << trkstates->second->get_name() << endl;
    
       if(trkstates->second->get_name() == "BECAL"){
  
@@ -1220,5 +1235,21 @@ void CalData::initializeVariables()
  
 }
 
+
+double CalData::getEta(double pt, double pz){
+  double theta = XYtoPhi(pz,pt);
+  double eta = -log(tan(theta/2.0));
+  return eta;
+}
+
+
+double CalData::XYtoPhi(double x, double y)
+{
+  // -Pi to +Pi
+  Double_t phi = atan2(y,x);
+  if(phi<-TMath::Pi()) phi += TMath::TwoPi();
+  if(phi>=TMath::Pi()) phi -= TMath::TwoPi();
+  return phi;
+}
 
 

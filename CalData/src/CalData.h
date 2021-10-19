@@ -112,6 +112,8 @@ class CalData : public SubsysReco
   void initializeVariables();
   void initializeTrees();
 
+  double XYtoPhi(double x, double y);
+  double getEta(double pt, double pz);
   /**
    * Make variables for the relevant trees
    */
