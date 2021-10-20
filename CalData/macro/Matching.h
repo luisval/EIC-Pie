@@ -167,9 +167,9 @@ Matching::Matching(TTree *tree) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("DISepcalData_lowpt.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("G4EICDetector_calData.root");
       if (!f || !f->IsOpen()) {
-         f = new TFile("DISepcalData_lowpt.root");
+         f = new TFile("G4EICDetector_calData.root");
       }
       f->GetObject("tracktree",tree);
 

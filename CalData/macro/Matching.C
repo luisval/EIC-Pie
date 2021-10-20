@@ -153,7 +153,6 @@ void Matching::Loop(){
       //  if(track_eta->at(j)>1.1 || track_eta->at(j)<-1.5) continue; //cut pseudorapidity for low q2
         if(abs(track_eta->at(j))>1.0) continue; //cut pseudorapidity for high q2
          //  cout << "track eta:  " << track_eta->at(j)<< endl;
-
         
          //  if(abs(track_pt->at(j))<2.0) continue;
          //  if(abs(track_pt->at(j))>5.0) continue;
@@ -171,19 +170,21 @@ void Matching::Loop(){
          //cout << "dR:  " << dRmin_th(track_eta->at(j), track_phi->at(j),idx_dR_track) << endl;
           dRmin_th(track_eta->at(j), track_phi->at(j), idx_dR_track);
 
-            if (truth_pid->at(idx_dR_track)!=11) continue; //Turn on for electrons
+           if (truth_pid->at(idx_dR_track)!=11) continue; //Turn on for electrons
         //  if (truth_pid->at(idx_dR_track)!=-211) continue; //Turn on for pions
         //   if (truth_pid->at(idx_dR_track)!=-321) continue; //Turn on for kaons
  
         // cout << "truth id:  " << truth_pid->at(idx_dR_track) << endl;
 
         // cout << "tr_CEMC_eta:  " << tr_CEMC_eta->at(j) << endl;
-        // cout << "idx_dR:  " << idx_dR << endl;
+         //cout << "idx_dR:  " << idx_dR << endl;
 
        //  if( dRmin(tr_CEMC_eta->at(j), tr_CEMC_phi->at(j), idx_dR) >0.01) continue; //dR cut clusters_tracks
          // cout << "dR:  " << dRmin(tr_CEMC_eta->at(j), tr_CEMC_phi->at(j), idx_dR) << endl;
-
+         idx_dR  =0;
          h_dRmin->Fill( dRmin(tr_CEMC_eta->at(j), tr_CEMC_phi->at(j), idx_dR) );
+
+      //   cout << "idx_dR:  " << idx_dR << endl;
 
          h_dRmin_th->Fill( dRmin_th(track_eta->at(j), track_phi->at(j),idx_dR_track) );
 
@@ -194,7 +195,7 @@ void Matching::Loop(){
       //  if (Ep<0.1) continue; //Turn on for 2-5 GeV
       //   if (Ep<0.1) continue; //Turn on for 5-10 GeV
 
-      //   cout << "Ep:  " << Ep << endl;
+         cout << "Ep:  " << Ep << endl;
 
          h_EMCal_Ep->Fill(Ep);
          h_EMCal_E->Fill(clus_energy->at(idx_dR));
@@ -209,7 +210,6 @@ void Matching::Loop(){
           h_truth_p_track_p->Fill(track_p->at(j),truth_p->at(idx_dR_track));
          
        //  }
-
          dRmin_tow(clus_eta->at(idx_dR), clus_phi->at(idx_dR), idx_dR_tow );
 
          float E_tow = towenergy->at(idx_dR_tow);
@@ -225,10 +225,10 @@ void Matching::Loop(){
           h_track_pt->Fill(track_pt->at(j)); 
      //     h_track_eta->Fill(track_eta->at(j)); 
 
-        //   cout << "truth id:  " << truth_pid->at(idx_dR_track) << endl;
-
+           cout << "truth id:  " << truth_pid->at(idx_dR_track) << endl;
+        
        } //End of tracks loop
-                               
+                              
 } //End of the events loop
 
 h_EMCal_Ep->Write();
