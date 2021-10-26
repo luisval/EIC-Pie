@@ -562,8 +562,7 @@ m_towphi.clear();
     return;
   }
 
-  if(clusters) cout << "clusters size" << clusters->size() << endl;
-
+ // if(clusters) cout << "clusters size" << clusters->size() << endl;
 
   /// Get the global vertex to determine the appropriate pseudorapidity of the clusters
 
@@ -586,11 +585,9 @@ m_towphi.clear();
 
   SvtxVertex* vtx = vertexmap->get(0);
 
-  //SvtxVertex *vtx = vertexmap->begin()->second;
 //  GlobalVertex *vtx = vertexmap->begin()->second;
   if (vtx == nullptr)
     return;
-
 
   RawClusterContainer::ConstRange begin_end = clusters->getClusters();
   RawClusterContainer::ConstIterator clusIter;
@@ -606,18 +603,7 @@ m_towphi.clear();
 
   double m_ceta = getEta(cluster->get_r(),cluster->get_z()-vtx->get_z());
   double m_cphi = cluster->get_phi();
-  
-    /// Get cluster characteristics
-    /// This helper class determines the photon characteristics
-    /// depending on the vertex position
-    /// This is important for e.g. eta determination and E_T determination
-  //  CLHEP::Hep3Vector vertex(vtx->get_x(), vtx->get_y(), vtx->get_z());
-  //  CLHEP::Hep3Vector E_vec_cluster = RawClusterUtility::GetECoreVec(*cluster, vertex);
-   // cout << "vx:" << vtx->get_x() << "vy:" << vtx->get_y() << "vxz" << vtx->get_z()<< endl;
-   // cout << "E:" << cluster->get_energy() << endl;
-
-   // cout << "ecore:" << (*cluster).get_ecore() << "y:" << cluster->get_y() << "z" << cluster->get_z()<< endl;
-
+   
  //  if (E_vec_cluster.perp() < m_mincluspt) continue; //cut in pt, skip lower than 0.25 GeV ~ stupid noise
    // cout << "pt:" << E_vec_cluster.perp() << endl;
 
@@ -627,9 +613,7 @@ m_towphi.clear();
  //  m_cluspt .push_back(E_vec_cluster.perp());
    m_clusphi .push_back(m_cphi);
 
-
   }
-
  
 //////////////////////////////////////EMCal//////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -637,7 +621,6 @@ m_towphi.clear();
 //////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////HCal/////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
-
 
 ////////////////////////////////////HCalIN///////////////////////////////////////
 
@@ -654,7 +637,9 @@ m_towphi.clear();
 
 /////////////////////// Vertex stuff/////////////////////////////////////////////////////////////
 // Get the global vertex to determine the appropriate pseudorapidity of the clusters
-  GlobalVertexMap *vertexmap_hcal = findNode::getClass<GlobalVertexMap>(topNode, "GlobalVertexMap");
+  SvtxVertexMap *vertexmap_hcal = findNode::getClass<SvtxVertexMap>(topNode, "GlobalVertexMap");
+
+ // GlobalVertexMap *vertexmap_hcal = findNode::getClass<GlobalVertexMap>(topNode, "GlobalVertexMap");
   if (!vertexmap)
   {
     cout << "CalData::getHCalINClusters - Fatal Error - GlobalVertexMap node is missing. Please turn on the do_global flag in the main macro in order to reconstruct the global vertex." << endl;
@@ -669,7 +654,8 @@ m_towphi.clear();
     return;
   }
 
-  GlobalVertex *vtxh = vertexmap_hcal->begin()->second;
+  SvtxVertex* vtxh = vertexmap->get(0);
+ // GlobalVertex *vtxh = vertexmap_hcal->begin()->second;
   if (vtxh == nullptr)
     return;
 
@@ -687,13 +673,12 @@ m_towphi.clear();
     const RawCluster *cluster_HCal = clusIter_h->second;
 
   /// Get cluster characteristics
-    CLHEP::Hep3Vector vertex(vtxh->get_x(), vtxh->get_y(), vtxh->get_z());
-    CLHEP::Hep3Vector E_vec_cluster_H = RawClusterUtility::GetECoreVec(*cluster_HCal, vertex);
+  double m_ceta_h = getEta(cluster_HCal->get_r(),cluster_HCal->get_z()-vtxh->get_z());
+  double m_cphi_h = cluster_HCal->get_phi();
 
-     m_clusenergy_HCal .push_back(E_vec_cluster_H.mag());
-     m_cluseta_HCal .push_back(E_vec_cluster_H.pseudoRapidity());
-     m_clusphi_HCal .push_back(E_vec_cluster_H.getPhi());
-     m_cluspt_HCal .push_back(E_vec_cluster_H.perp());
+     m_clusenergy_HCal .push_back(cluster_HCal->get_energy());
+     m_cluseta_HCal .push_back(m_ceta_h);
+     m_clusphi_HCal .push_back(m_cphi_h);
   }
                    
 //////////////////////////////////////////HCalIN end///////////////////////////////////////////////
