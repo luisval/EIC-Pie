@@ -422,8 +422,6 @@ m_toweta.clear();
 m_towphi.clear();
   
 /////////////////
- //  SvtxTrackMap *trackmap = findNode::getClass<SvtxTrackMap>(topNode, "TrackMap");
-
 
   PHG4TruthInfoContainer *truthinfo = findNode::getClass<PHG4TruthInfoContainer>(topNode, "G4TruthInfo");
   PHG4TruthInfoContainer::Range range = truthinfo->GetPrimaryParticleRange();
@@ -437,7 +435,7 @@ m_towphi.clear();
   float pz = truth->get_pz();
   float pe = truth->get_e();
 
-  m_truthpx .push_back(truth->get_px());
+    m_truthpx .push_back(truth->get_px());
     m_truthpy .push_back(truth->get_py());
     m_truthpz .push_back(truth->get_pz());
     m_truthp  .push_back(sqrt(px * px + py * py + pz * pz));
@@ -452,8 +450,7 @@ m_towphi.clear();
         m_trutheta .push_back(-99);
     m_truthpid .push_back(truth->get_pid());
   
-
- } //PHG4TruthInfoContainer Loop should be here
+ } //End of Truth Loop 
     
   SvtxTrackMap *trackmap = findNode::getClass<SvtxTrackMap>(topNode, "TrackMap");
 
@@ -466,7 +463,6 @@ m_towphi.clear();
      cout << "EICPIDParticleContainer named EICPIDParticleMap does not exist. Skip saving PID info" << endl;
    }
     
-
   if (!trackmap){
      cout << PHWHERE
           << "SvtxTrackMap node is missing, can't collect tracks"
@@ -484,13 +480,7 @@ m_towphi.clear();
     }
   
   m_svtxEvalStack->next_event(topNode);
-
-  /// Get the track evaluator
-  //SvtxTrackEval *trackeval = m_svtxEvalStack->get_track_eval();
-
-  /// Get the range for primary tracks
-  //PHG4TruthInfoContainer *truthinfo = findNode::getClass<PHG4TruthInfoContainer>(topNode, "G4TruthInfo");
-
+  
   if (Verbosity() > 1)
   {
     cout << "Get the SVTX tracks" << endl;
@@ -523,37 +513,23 @@ m_towphi.clear();
     m_tr_z   .push_back(track->get_z());
 
 
-/////////////
- //  m_track_id   .push_back(temp->get_truth_track_id());
-
-   //cout << "truth track id " << temp->get_truth_track_id() << endl; 
-
-  //    cout << "truth track id " <<  temp->get_truth_track_id() - g4particle->get_track_id() << endl; 
-
-//////////////
-
-
-    for (PHG4TruthInfoContainer::ConstIterator iter = range.first; iter != range.second; ++iter){
+  ////Truth loop/////
+  for (PHG4TruthInfoContainer::ConstIterator iter = range.first; iter != range.second; ++iter){
 
   const PHG4Particle *truth = iter->second;
 
-  if ((track->get_truth_track_id() - truth->get_track_id())==0){
-
-   // cout << "truth track id " <<  track->get_truth_track_id() - truth->get_track_id() << endl; 
+  if ((track->get_truth_track_id() - truth->get_track_id())==0){ //Truth-tracks matching
 
     m_track_id .push_back(truth->get_pid());
+   
+   // cout << "track id " <<  truth->get_pid() << endl; 
 
-    cout << "track id " <<  truth->get_pid() << endl; 
+   } //End of matching loop
 
-
-
-}
-
-}
+  } //End of truth loop
 
 
-
-  }
+  } //End of tracks loop
   
 
  ///////////////////////////////////////////////////////////////////////////////////////////////////
