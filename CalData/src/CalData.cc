@@ -317,7 +317,6 @@ void CalData::getPHG4Truth(PHCompositeNode *topNode)
 {
   /// G4 truth particle node
 /*  PHG4TruthInfoContainer *truthinfo = findNode::getClass<PHG4TruthInfoContainer>(topNode, "G4TruthInfo");
-
   if (!truthinfo)
   {
     cout << PHWHERE
@@ -325,10 +324,8 @@ void CalData::getPHG4Truth(PHCompositeNode *topNode)
          << endl;
     return;
   }
-
   /// Get the primary particle range
   PHG4TruthInfoContainer::Range range = truthinfo->GetPrimaryParticleRange();
-
   /// Loop over the G4 truth (stable) particles
   for (PHG4TruthInfoContainer::ConstIterator iter = range.first;
        iter != range.second;
@@ -336,24 +333,19 @@ void CalData::getPHG4Truth(PHCompositeNode *topNode)
   {
     /// Get this truth particle
     const PHG4Particle *truth = iter->second;
-
     /// Get this particles momentum, etc.
     m_truthpx = truth->get_px();
     m_truthpy = truth->get_py();
     m_truthpz = truth->get_pz();
     m_truthp = sqrt(m_truthpx * m_truthpx + m_truthpy * m_truthpy + m_truthpz * m_truthpz);
     m_truthenergy = truth->get_e();
-
     m_truthpt = sqrt(m_truthpx * m_truthpx + m_truthpy * m_truthpy);
-
     m_truthphi = atan(m_truthpy / m_truthpx);
-
     m_trutheta = atanh(m_truthpz / m_truthenergy);
     /// Check for nans
     if (m_trutheta != m_trutheta)
       m_trutheta = -99;
     m_truthpid = truth->get_pid();
-
     /// Fill the g4 truth tree
     m_truthtree->Fill();
   }*/
@@ -368,6 +360,7 @@ void CalData::getTracks(PHCompositeNode *topNode)
 {
   /// SVTX tracks node
   //SvtxTrackMap *trackmap = findNode::getClass<SvtxTrackMap>(topNode, "SvtxTrackMap");
+  m_track_id.clear();
   m_tr_px.clear();
   m_tr_py.clear();
   m_tr_pz.clear();
@@ -429,35 +422,38 @@ m_toweta.clear();
 m_towphi.clear();
   
 /////////////////
+ //  SvtxTrackMap *trackmap = findNode::getClass<SvtxTrackMap>(topNode, "TrackMap");
+
 
   PHG4TruthInfoContainer *truthinfo = findNode::getClass<PHG4TruthInfoContainer>(topNode, "G4TruthInfo");
   PHG4TruthInfoContainer::Range range = truthinfo->GetPrimaryParticleRange();
 
   for (PHG4TruthInfoContainer::ConstIterator iter = range.first; iter != range.second; ++iter){
 
-	const PHG4Particle *truth = iter->second;
+  const PHG4Particle *truth = iter->second;
 
-	float px = truth->get_px();	
-	float py = truth->get_py();
-	float pz = truth->get_pz();
-	float pe = truth->get_e();
+  float px = truth->get_px(); 
+  float py = truth->get_py();
+  float pz = truth->get_pz();
+  float pe = truth->get_e();
 
-	m_truthpx .push_back(truth->get_px());
-  	m_truthpy .push_back(truth->get_py());
-  	m_truthpz .push_back(truth->get_pz());
-  	m_truthp  .push_back(sqrt(px * px + py * py + pz * pz));
-  	m_truthenergy .push_back(truth->get_e());
+  m_truthpx .push_back(truth->get_px());
+    m_truthpy .push_back(truth->get_py());
+    m_truthpz .push_back(truth->get_pz());
+    m_truthp  .push_back(sqrt(px * px + py * py + pz * pz));
+    m_truthenergy .push_back(truth->get_e());
 
-  	m_truthpt .push_back(sqrt(px * px + py * py));
+    m_truthpt .push_back(sqrt(px * px + py * py));
 
-  	m_truthphi .push_back(atan(py / px));
+    m_truthphi .push_back(atan(py / px));
 
-  	m_trutheta .push_back(atanh(pz / pe));
-  	if (m_trutheta != m_trutheta)
-    		m_trutheta .push_back(-99);
-  	m_truthpid .push_back(truth->get_pid());
- 
- }
+    m_trutheta .push_back(atanh(pz / pe));
+    if (m_trutheta != m_trutheta)
+        m_trutheta .push_back(-99);
+    m_truthpid .push_back(truth->get_pid());
+  
+
+ } //PHG4TruthInfoContainer Loop should be here
     
   SvtxTrackMap *trackmap = findNode::getClass<SvtxTrackMap>(topNode, "TrackMap");
 
@@ -505,11 +501,10 @@ m_towphi.clear();
    
    // if(track) cout << "track px " << track->get_px() << endl; 
 
-
     /// Get the reconstructed track info
     float px = track->get_px();
     float py = track->get_py();
-    float pz = track->get_pz();	
+    float pz = track->get_pz(); 
     m_tr_px .push_back(track->get_px());
     m_tr_py .push_back(track->get_py());
     m_tr_pz .push_back(track->get_pz());
@@ -527,16 +522,39 @@ m_towphi.clear();
     m_tr_y   .push_back(track->get_y());
     m_tr_z   .push_back(track->get_z());
 
-     /// Ensure that the reco track is a fast sim track
-    SvtxTrack_FastSim *temp = dynamic_cast<SvtxTrack_FastSim *>(iter->second);
-    if (!temp)
-    {
-      if (Verbosity() > 0)
-        std::cout << "Skipping non fast track sim object..." << std::endl;
-      continue;
-    }
+
+/////////////
+ //  m_track_id   .push_back(temp->get_truth_track_id());
+
+   //cout << "truth track id " << temp->get_truth_track_id() << endl; 
+
+  //    cout << "truth track id " <<  temp->get_truth_track_id() - g4particle->get_track_id() << endl; 
+
+//////////////
+
+
+    for (PHG4TruthInfoContainer::ConstIterator iter = range.first; iter != range.second; ++iter){
+
+  const PHG4Particle *truth = iter->second;
+
+  if ((track->get_truth_track_id() - truth->get_track_id())==0){
+
+   // cout << "truth track id " <<  track->get_truth_track_id() - truth->get_track_id() << endl; 
+
+    m_track_id .push_back(truth->get_pid());
+
+    cout << "track id " <<  truth->get_pid() << endl; 
+
+
+
+}
+
+}
+
+
 
   }
+  
 
  ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////Tracks calorimeters extrapolation////////////////////////////////////////
@@ -568,7 +586,6 @@ m_towphi.clear();
 
    SvtxVertexMap *vertexmap = findNode::getClass<SvtxVertexMap>(topNode, "SvtxVertexMap");
 
-  //GlobalVertexMap *vertexmap = findNode::getClass<GlobalVertexMap>(topNode, "GlobalVertexMap");
   if (!vertexmap)
   {
     cout << "CalData::getEmcalClusters - Fatal Error - GlobalVertexMap node is missing. Please turn on the do_global flag in the main macro in order to reconstruct the global vertex." << endl;
@@ -584,8 +601,6 @@ m_towphi.clear();
   }
 
   SvtxVertex* vtx = vertexmap->get(0);
-
-//  GlobalVertex *vtx = vertexmap->begin()->second;
   if (vtx == nullptr)
     return;
 
@@ -637,9 +652,8 @@ m_towphi.clear();
 
 /////////////////////// Vertex stuff/////////////////////////////////////////////////////////////
 // Get the global vertex to determine the appropriate pseudorapidity of the clusters
-  SvtxVertexMap *vertexmap_hcal = findNode::getClass<SvtxVertexMap>(topNode, "GlobalVertexMap");
+  SvtxVertexMap *vertexmap_hcal = findNode::getClass<SvtxVertexMap>(topNode, "SvtxVertexMap");
 
- // GlobalVertexMap *vertexmap_hcal = findNode::getClass<GlobalVertexMap>(topNode, "GlobalVertexMap");
   if (!vertexmap)
   {
     cout << "CalData::getHCalINClusters - Fatal Error - GlobalVertexMap node is missing. Please turn on the do_global flag in the main macro in order to reconstruct the global vertex." << endl;
@@ -654,8 +668,7 @@ m_towphi.clear();
     return;
   }
 
-  SvtxVertex* vtxh = vertexmap->get(0);
- // GlobalVertex *vtxh = vertexmap_hcal->begin()->second;
+  SvtxVertex* vtxh = vertexmap_hcal->get(0);
   if (vtxh == nullptr)
     return;
 
@@ -697,10 +710,9 @@ RawClusterContainer *clusters_hcalout = findNode::getClass<RawClusterContainer>(
   }
     //if(clusters_hcalout) cout << "clusters HCal size" << clusters_hcal->size() << endl;
 
-
 /////////////////////// Vertex stuff/////////////////////////////////////////////////////////////
 // Get the global vertex to determine the appropriate pseudorapidity of the clusters
-  GlobalVertexMap *vertexmap_hcalout = findNode::getClass<GlobalVertexMap>(topNode, "GlobalVertexMap");
+  SvtxVertexMap *vertexmap_hcalout = findNode::getClass<SvtxVertexMap>(topNode, "SvtxVertexMap");
   if (!vertexmap)
   {
     cout << "CalData::getHCalcalClusters - Fatal Error - GlobalVertexMap node is missing. Please turn on the do_global flag in the main macro in order to reconstruct the global vertex." << endl;
@@ -709,7 +721,7 @@ RawClusterContainer *clusters_hcalout = findNode::getClass<RawClusterContainer>(
     return;
   }
 
-  GlobalVertex *vtxhcout = vertexmap_hcalout->begin()->second;
+  SvtxVertex* vtxhcout = vertexmap_hcalout->get(0);
   if (vtxhcout == nullptr)
     return;
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -725,14 +737,15 @@ RawClusterContainer *clusters_hcalout = findNode::getClass<RawClusterContainer>(
   /// Get this cluster
     const RawCluster *cluster_HCalOUT = clusIter_hout->second;
 
-  /// Get cluster characteristics
-    CLHEP::Hep3Vector vertex(vtxhcout->get_x(), vtxhcout->get_y(), vtxhcout->get_z());
-    CLHEP::Hep3Vector E_vec_cluster_HCOUT = RawClusterUtility::GetECoreVec(*cluster_HCalOUT, vertex);
+  /// Get cluster characteristics);
 
-     m_clusenergy_HCalOUT .push_back(E_vec_cluster_HCOUT.mag());
-     m_cluseta_HCalOUT .push_back(E_vec_cluster_HCOUT.pseudoRapidity());
-     m_clusphi_HCalOUT .push_back(E_vec_cluster_HCOUT.getPhi());
-     m_cluspt_HCalOUT .push_back(E_vec_cluster_HCOUT.perp());
+  double m_ceta_hout = getEta(cluster_HCalOUT->get_r(),cluster_HCalOUT->get_z()-vtxhcout->get_z());
+  double m_cphi_hout = cluster_HCalOUT->get_phi();
+
+
+     m_clusenergy_HCalOUT .push_back(cluster_HCalOUT->get_energy());
+     m_cluseta_HCalOUT .push_back(m_ceta_hout);
+     m_clusphi_HCalOUT .push_back(m_cphi_hout);
   }
 ///////////////////////////////////////////HCalOutend/////////////////////////////////////////////////
 
@@ -832,30 +845,22 @@ for (SvtxTrackMap::Iter iter = trackmap->begin(); iter != trackmap->end(); ++ite
 
 
 /*
-
   /// Get the global vertex to determine the appropriate pseudorapidity of the clusters
   GlobalVertexMap *vertexmap_tow = findNode::getClass<GlobalVertexMap>(topNode, "GlobalVertexMap");
   if (!vertexmap_tow)
   {
     cout << "CalData::getTowers - Fatal Error - GlobalVertexMap node is missing. Please turn on the do_global flag in the main macro in order to reconstruct the global vertex." << endl;
     assert(vertexmap_tow);  // force quit
-
     return;
   }
-
   if (vertexmap_tow->empty())
   {
     cout << "CalData::getTowers - Fatal Error - GlobalVertexMap node is empty. Please turn on the do_global flag in the main macro in order to reconstruct the global vertex." << endl;
     return;
   }
-
-
-
   GlobalVertex *vtx_tow = vertexmap_tow->begin()->second;
   if (vtx_tow == nullptr)
     return;
-
-
   RawTowerContainer::ConstRange begin_end_tow = towers->getTowers();
   RawTowerContainer::ConstIterator towIter;
  
@@ -866,25 +871,20 @@ for (SvtxTrackMap::Iter iter = trackmap->begin(); iter != trackmap->end(); ++ite
   {
     /// Get this cluster
     const RawTower *Tower = towIter->second;
-
     /// Get cluster characteristics
     /// This helper class determines the photon characteristics
     /// depending on the vertex position
     /// This is important for e.g. eta determination and E_T determination
     CLHEP::Hep3Vector vertex(vtx_tow->get_x(), vtx_tow->get_y(), vtx_tow->get_z());
     CLHEP::Hep3Vector vec_tower = RawTowerUtility::GetECoreVec(*tower, vertex);
-
    if (vec_tower.perp() < m_mincluspt) continue; //cut in pt, skip lower than 0.25 GeV ~ stupid noise
     //cout << "pt:" << tower.perp() << endl;
-
    m_towenergy .push_back(vec_tower.mag());
    m_toweta .push_back(vec_tower.pseudoRapidity());
    m_towtheta .push_back(vec_tower.getTheta());
    m_towpt .push_back(vec_tower.perp());
    m_towphi .push_back(vec_tower.getPhi());
-
   }
-
   */
 
  //////////////////////////////////////End of towers//////////////////////////////////////////////////
@@ -895,6 +895,7 @@ for (SvtxTrackMap::Iter iter = trackmap->begin(); iter != trackmap->end(); ++ite
 m_clustertree->Fill();
 m_tracktree->Fill();
 
+m_track_id.clear();
 m_tr_px.clear();
 m_tr_py.clear();
 m_tr_pz.clear();
@@ -1017,10 +1018,8 @@ void CalData::getEMCalClusters(PHCompositeNode *topNode)
        ++clusIter)
   {
     /*
-
     /// Get this cluster
     const RawCluster *cluster = clusIter->second;
-
     /// Get cluster characteristics
     /// This helper class determines the photon characteristics
     /// depending on the vertex position
@@ -1028,20 +1027,16 @@ void CalData::getEMCalClusters(PHCompositeNode *topNode)
   //  CLHEP::Hep3Vector vertex(vtx->get_x(), vtx->get_y(), vtx->get_z());
  //   CLHEP::Hep3Vector E_vec_cluster = RawClusterUtility::GetECoreVec(*cluster, vertex);
    
-
     m_clusenergy = E_vec_cluster.mag();
     m_cluseta = E_vec_cluster.pseudoRapidity();
     m_clustheta = E_vec_cluster.getTheta();
     m_cluspt = E_vec_cluster.perp();
     m_clusphi = E_vec_cluster.getPhi();
-
     if (m_cluspt < m_mincluspt)
       continue;
-
     m_cluspx = m_cluspt * cos(m_clusphi);
     m_cluspy = m_cluspt * sin(m_clusphi);
     m_cluspz = sqrt(m_clusenergy * m_clusenergy - m_cluspx * m_cluspx - m_cluspy * m_cluspy);
-
     //fill the cluster tree with all emcal clusters
     m_clustertree->Fill();
   
@@ -1057,6 +1052,7 @@ void CalData::getEMCalClusters(PHCompositeNode *topNode)
 void CalData::initializeTrees()
 {
   m_tracktree = new TTree("tracktree", "A tree with svtx tracks");
+  m_tracktree->Branch("track_id", &m_track_id);
   m_tracktree->Branch("track_px", &m_tr_px);
   m_tracktree->Branch("track_py", &m_tr_py);
   m_tracktree->Branch("track_pz", &m_tr_pz);
@@ -1236,5 +1232,3 @@ double CalData::XYtoPhi(double x, double y)
   if(phi>=TMath::Pi()) phi -= TMath::TwoPi();
   return phi;
 }
-
-

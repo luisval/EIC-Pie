@@ -137,6 +137,7 @@ class CalData : public SubsysReco
   //int m_truthpid;
 
   /// Track variables
+  std::vector<double> m_track_id;
   std::vector<double> m_tr_px;
   std::vector<double> m_tr_py;
   std::vector<double> m_tr_pz;
