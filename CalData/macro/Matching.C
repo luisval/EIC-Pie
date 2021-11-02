@@ -120,11 +120,10 @@ void Matching::Loop(){
         h_dRmin_th->GetYaxis()->CenterTitle(true);
         h_dRmin_th->GetYaxis()->SetTitleOffset(1.2);     
        
-
   TH2D *h_truth_p_track_p  = new TH2D("track_truth_p","track_p vs truth_p",100,0,20,100,0,20);
         h_truth_p_track_p->SetXTitle("track_p (GeV)");
-        h_truth_p_track_p->SetYTitle("truth_p (GeV)");       
-         
+        h_truth_p_track_p->SetYTitle("truth_p (GeV)");      
+       
          
    Long64_t nbytes = 0, nb = 0;
 
@@ -146,7 +145,6 @@ void Matching::Loop(){
        if(towenergy->empty()) continue;
        if (track_eta->empty()) continue;
        if (tr_CEMC_phi->empty()) continue;
-
        if (truth_eta->empty()) continue;
 
        //Tracks loop
@@ -165,30 +163,22 @@ void Matching::Loop(){
          int idx_dR, idx_dEta, idx_dPhi, dummy, idx_dR_tow, idx_dR_track;
         
           if (tr_CEMC_eta->at(j)==9999.) continue;
-       //   if (truth_eta->at(j)==99999999.) continue;
-      //    if (track_eta->at(j)==99999999.) continue;
 
-          if(dRmin_th(track_eta->at(j), track_phi->at(j),idx_dR_track)>0.01) continue; //dR cut tracks_truth (improves matching)
-         //cout << "dR:  " << dRmin_th(track_eta->at(j), track_phi->at(j),idx_dR_track) << endl;
-          dRmin_th(track_eta->at(j), track_phi->at(j), idx_dR_track);
+          /*if(dRmin_th(track_eta->at(j), track_phi->at(j),idx_dR_track)>0.01) continue; //dR cut tracks_truth (improves matching)
+            dRmin_th(track_eta->at(j), track_phi->at(j), idx_dR_track); */
 
-           if (truth_pid->at(idx_dR_track)!=11) continue; //Turn on for electrons
-       //   if (truth_pid->at(idx_dR_track)!=-211) continue; //Turn on for pions
-        //   if (truth_pid->at(idx_dR_track)!=-321) continue; //Turn on for kaons
+       //    if (truth_pid->at(j)!=11) continue; //Turn on for electrons
+          if (truth_pid->at(j)!=-211) continue; //Turn on for pions
+        //   if (truth_pid->at(j)!=-321) continue; //Turn on for kaons
  
-        // cout << "truth id:  " << truth_pid->at(idx_dR_track) << endl;
+         cout << "truth id:  " << truth_pid->at(j) << endl;
 
-        // cout << "tr_CEMC_eta:  " << tr_CEMC_eta->at(j) << endl;
-         //cout << "idx_dR:  " << idx_dR << endl;
-
-       //  if( dRmin(tr_CEMC_eta->at(j), tr_CEMC_phi->at(j), idx_dR) >0.01) continue; //dR cut clusters_tracks
+        if( dRmin(tr_CEMC_eta->at(j), tr_CEMC_phi->at(j), idx_dR) >0.01) continue; //dR cut clusters_tracks
          // cout << "dR:  " << dRmin(tr_CEMC_eta->at(j), tr_CEMC_phi->at(j), idx_dR) << endl;
          idx_dR  =0;
-         h_dRmin->Fill( dRmin(tr_CEMC_eta->at(j), tr_CEMC_phi->at(j), idx_dR) );
-
-      //   cout << "idx_dR:  " << idx_dR << endl;
-
-         h_dRmin_th->Fill( dRmin_th(track_eta->at(j), track_phi->at(j),idx_dR_track) );
+         h_dRmin->Fill( dRmin(tr_CEMC_eta->at(j), tr_CEMC_phi->at(j), idx_dR) ); //Tracks-clusters
+         // cout << "idx_dR:  " << idx_dR << endl;
+        // h_dRmin_th->Fill( dRmin_th(track_eta->at(j), track_phi->at(j),idx_dR_track) ); //Truth-tracks
 
          float scaleE = 0.8;
          float Ep0 = clus_energy->at(idx_dR)/track_p->at(j);
@@ -228,9 +218,7 @@ void Matching::Loop(){
       //    h_track_p->Fill(track_p->at(j)); 
           h_track_pt->Fill(track_pt->at(j)); 
      //     h_track_eta->Fill(track_eta->at(j)); 
-
-           cout << "truth id:  " << truth_pid->at(idx_dR_track) << endl;
-        
+            
        } //End of tracks loop
                               
 } //End of the events loop
@@ -252,98 +240,7 @@ h_track_eta->Write();
 h_truth_p->Write();
 
 h_truth_p_track_p->Write();
-/*
-TCanvas *c0 = new TCanvas();
-   c0->SetLogy();  
-   h_dRmin->SetXTitle("dRmin");
-   h_dRmin->SetYTitle("Counts");
-   h_dRmin->GetXaxis()->CenterTitle(true);
-   h_dRmin->GetYaxis()->CenterTitle(true);
-   h_dRmin->GetYaxis()->SetTitleOffset(1.2);
-   h_dRmin->Draw();
-   c0->SaveAs("plots/dRmin.svg");
 
- TCanvas *c1 = new TCanvas();
-   //c1->SetLogy();  
-   h_EMCal_E->SetXTitle("E");
-   h_EMCal_E->SetYTitle("Counts");
-   h_EMCal_E->GetXaxis()->CenterTitle(true);
-   h_EMCal_E->GetYaxis()->CenterTitle(true);
-   h_EMCal_E->GetYaxis()->SetTitleOffset(1.2);
-   h_EMCal_E->Draw();
-   c1->SaveAs("plots/EMCal_E.svg");
-
- TCanvas *c2 = new TCanvas();
-   //c1->SetLogy();  
-   h_EMCal_Ep->SetXTitle("E/p");
-   h_EMCal_Ep->SetYTitle("Counts");
-   h_EMCal_Ep->GetXaxis()->CenterTitle(true);
-   h_EMCal_Ep->GetYaxis()->CenterTitle(true);
-   h_EMCal_Ep->GetYaxis()->SetTitleOffset(1.2);
-   h_EMCal_Ep->Draw();
-   c2->SaveAs("plots/EMCal_Ep.svg");
-
- TCanvas *c3 = new TCanvas();
-   c3->SetLogy();  
-   h_tow_E->SetXTitle("Tower energy");
-   h_tow_E->SetYTitle("Counts");
-   h_tow_E->GetXaxis()->CenterTitle(true);
-   h_tow_E->GetYaxis()->CenterTitle(true);
-   h_tow_E->GetYaxis()->SetTitleOffset(1.2);
-   h_tow_E->Draw();
-   c3->SaveAs("plots/tow_E.svg");
-
- TCanvas *c4 = new TCanvas();
-   c4->SetLogy();  
-   h_towclus_E->SetXTitle("tower/cluster");
-   h_towclus_E->SetYTitle("Counts");
-   h_towclus_E->GetXaxis()->CenterTitle(true);
-   h_towclus_E->GetYaxis()->CenterTitle(true);
-   h_towclus_E->GetYaxis()->SetTitleOffset(1.2);
-   h_towclus_E->Draw();
-   c4->SaveAs("plots/towclus_E.svg");
-
- TCanvas *c5 = new TCanvas();
-   c5->SetLogy();  
-   h_tow_Ep->SetXTitle("E/p");
-   h_tow_Ep->SetYTitle("Counts");
-   h_tow_Ep->GetXaxis()->CenterTitle(true);
-   h_tow_Ep->GetYaxis()->CenterTitle(true);
-   h_tow_Ep->GetYaxis()->SetTitleOffset(1.2);
-   h_tow_Ep->Draw();
-   c5->SaveAs("plots/tow_Ep.svg");
-
-  TCanvas *c6 = new TCanvas();
-   //c6->SetLogy();  
-   h_track_p->SetXTitle("track_p");
-   h_track_p->SetYTitle("Counts");
-   h_track_p->GetXaxis()->CenterTitle(true);
-   h_track_p->GetYaxis()->CenterTitle(true);
-   h_track_p->GetYaxis()->SetTitleOffset(1.2);
-   h_track_p->Draw();
-   c6->SaveAs("plots/track_p.svg");
-   
- TCanvas *c7 = new TCanvas();
-   //c6->SetLogy();  
-   h_track_pt->SetXTitle("track_pt");
-   h_track_pt->SetYTitle("Counts");
-   h_track_pt->GetXaxis()->CenterTitle(true);
-   h_track_pt->GetYaxis()->CenterTitle(true);
-   h_track_pt->GetYaxis()->SetTitleOffset(1.2);
-   h_track_pt->Draw();
-   c7->SaveAs("plots/track_pt.svg");
-
-TCanvas *c80 = new TCanvas();
-   c0->SetLogy();  
-   h_dRmin_tow->SetXTitle("dRmin");
-   h_dRmin_tow->SetYTitle("Counts");
-   h_dRmin_tow->GetXaxis()->CenterTitle(true);
-   h_dRmin_tow->GetYaxis()->CenterTitle(true);
-   h_dRmin_tow->GetYaxis()->SetTitleOffset(1.2);
-   h_dRmin_tow->Draw();
-   c0->SaveAs("plots/dRmin.svg");     
-*/
-  // fout->Close();
 //////////////////////////////////////////////////////////////////////////////////////
  cout << "---End of the program. Gracias-----" << endl;
 
