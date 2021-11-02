@@ -427,7 +427,7 @@ m_towphi.clear();
   PHG4TruthInfoContainer::Range range = truthinfo->GetPrimaryParticleRange();
 
   for (PHG4TruthInfoContainer::ConstIterator iter = range.first; iter != range.second; ++iter){
-
+/*
   const PHG4Particle *truth = iter->second;
 
   float px = truth->get_px(); 
@@ -449,7 +449,7 @@ m_towphi.clear();
     if (m_trutheta != m_trutheta)
         m_trutheta .push_back(-99);
     m_truthpid .push_back(truth->get_pid());
-  
+  */
  } //End of Truth Loop 
     
   SvtxTrackMap *trackmap = findNode::getClass<SvtxTrackMap>(topNode, "TrackMap");
@@ -499,7 +499,7 @@ m_towphi.clear();
     m_tr_py .push_back(track->get_py());
     m_tr_pz .push_back(track->get_pz());
     m_tr_p  .push_back(sqrt(px * px + py * py + pz * pz));
-    m_tr_pt .push_back(sqrt(px * px + py * py));
+    m_tr_pt .push_back(sqrt(px * px + py * py)); 
 
     m_tr_phi .push_back(track->get_phi());
     m_tr_eta .push_back(track->get_eta());
@@ -521,8 +521,29 @@ m_towphi.clear();
   if ((track->get_truth_track_id() - truth->get_track_id())==0){ //Truth-tracks matching
 
     m_track_id .push_back(truth->get_pid());
-   
    // cout << "track id " <<  truth->get_pid() << endl; 
+
+    //Save truth pt here too
+  float px = truth->get_px(); 
+  float py = truth->get_py();
+  float pz = truth->get_pz();
+  float pe = truth->get_e();
+
+    m_truthpx .push_back(truth->get_px());
+    m_truthpy .push_back(truth->get_py());
+    m_truthpz .push_back(truth->get_pz());
+    m_truthp  .push_back(sqrt(px * px + py * py + pz * pz));
+    m_truthenergy .push_back(truth->get_e());
+
+    m_truthpt .push_back(sqrt(px * px + py * py));
+
+    m_truthphi .push_back(atan(py / px));
+
+    m_trutheta .push_back(atanh(pz / pe));
+    if (m_trutheta != m_trutheta)
+        m_trutheta .push_back(-99);
+    m_truthpid .push_back(truth->get_pid());   
+   
 
    } //End of matching loop
 
