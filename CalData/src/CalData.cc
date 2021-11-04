@@ -491,15 +491,26 @@ m_towphi.clear();
    
    // if(track) cout << "track px " << track->get_px() << endl; 
 
+
+  ////Truth loop/////
+  for (PHG4TruthInfoContainer::ConstIterator iter = range.first; iter != range.second; ++iter){
+
+  const PHG4Particle *truth = iter->second;
+
+  if ((track->get_truth_track_id() - truth->get_track_id())==0){ //Truth-tracks matching
+
+    m_track_id .push_back(truth->get_pid());
+   // cout << "track id " <<  truth->get_pid() << endl; 
+
     /// Get the reconstructed track info
-    float px = track->get_px();
-    float py = track->get_py();
-    float pz = track->get_pz(); 
+    float px_trk = track->get_px();
+    float py_trk = track->get_py();
+    float pz_trk = track->get_pz(); 
     m_tr_px .push_back(track->get_px());
     m_tr_py .push_back(track->get_py());
     m_tr_pz .push_back(track->get_pz());
-    m_tr_p  .push_back(sqrt(px * px + py * py + pz * pz));
-    m_tr_pt .push_back(sqrt(px * px + py * py)); 
+    m_tr_p  .push_back(sqrt(px_trk * px_trk + py_trk * py_trk + pz_trk * pz_trk));
+    m_tr_pt .push_back(sqrt(px_trk * px_trk + py_trk * py_trk)); 
 
     m_tr_phi .push_back(track->get_phi());
     m_tr_eta .push_back(track->get_eta());
@@ -512,16 +523,6 @@ m_towphi.clear();
     m_tr_y   .push_back(track->get_y());
     m_tr_z   .push_back(track->get_z());
 
-
-  ////Truth loop/////
-  for (PHG4TruthInfoContainer::ConstIterator iter = range.first; iter != range.second; ++iter){
-
-  const PHG4Particle *truth = iter->second;
-
-  if ((track->get_truth_track_id() - truth->get_track_id())==0){ //Truth-tracks matching
-
-    m_track_id .push_back(truth->get_pid());
-   // cout << "track id " <<  truth->get_pid() << endl; 
 
     //Save truth pt here too
   float px = truth->get_px(); 
@@ -544,6 +545,52 @@ m_towphi.clear();
         m_trutheta .push_back(-99);
     m_truthpid .push_back(truth->get_pid());   
    
+/////////////
+   for (SvtxTrack::ConstStateIter trkstates = track->begin_states(); trkstates != track->end_states(); ++trkstates){
+       
+        cout << "trkstates: " << trkstates->second->get_name() << endl;
+   
+      if(trkstates->second->get_name() == "BECAL"){
+ 
+      double CEMC_x = trkstates->second->get_mom(0);
+      double CEMC_y = trkstates->second->get_mom(1);
+      double CEMC_z = trkstates->second->get_mom(2);
+ 
+      m_tr_CEMC_eta .push_back(asinh(CEMC_z / sqrt(CEMC_x * CEMC_x + CEMC_y * CEMC_y)));
+      m_tr_CEMC_phi .push_back(atan2(CEMC_y, CEMC_x));
+ 
+      m_tr_CEMC_x .push_back(trkstates->second->get_pos(0));
+      m_tr_CEMC_y .push_back(trkstates->second->get_pos(1));
+      m_tr_CEMC_z .push_back(trkstates->second->get_pos(2));
+      m_tr_CEMC_px .push_back(trkstates->second->get_mom(0));
+      m_tr_CEMC_py .push_back(trkstates->second->get_mom(1));
+      m_tr_CEMC_pz .push_back(trkstates->second->get_mom(2));
+
+
+    }
+
+      else {
+ /*
+      double CEMC_x = trkstates->second->get_pos(0);
+      double CEMC_y = trkstates->second->get_pos(1);
+      double CEMC_z = trkstates->second->get_pos(2);
+      */
+ 
+      m_tr_CEMC_eta .push_back(9999.);
+      m_tr_CEMC_phi .push_back(9999.);
+
+      m_tr_CEMC_x .push_back(9999.);
+      m_tr_CEMC_y .push_back(9999.);
+      m_tr_CEMC_z .push_back(9999.);
+      m_tr_CEMC_px .push_back(9999.);
+      m_tr_CEMC_py .push_back(9999.);
+      m_tr_CEMC_pz .push_back(9999.);
+    
+         // cout << "CEMC extrapolation " << endl; 
+     }   
+   }
+
+/////////////////
 
    } //End of matching loop
 
@@ -751,56 +798,6 @@ RawClusterContainer *clusters_hcalout = findNode::getClass<RawClusterContainer>(
 
 //////////////////////////////////////Clusters caloirimeters end///////////////////////////////////////////////////
 
-//////////////////////////CEMCal clusters tracks extrapolation///////////////////////////
-  
-for (SvtxTrackMap::Iter iter = trackmap->begin(); iter != trackmap->end(); ++iter){
- 
-    SvtxTrack *track = iter->second;
-
-    for (SvtxTrack::ConstStateIter trkstates = track->begin_states(); trkstates != track->end_states(); ++trkstates){
-       
-      //  cout << "trkstates: " << trkstates->second->get_name() << endl;
-   
-      if(trkstates->second->get_name() == "BECAL"){
- 
-      double CEMC_x = trkstates->second->get_pos(0);
-      double CEMC_y = trkstates->second->get_pos(1);
-      double CEMC_z = trkstates->second->get_pos(2);
- 
-      m_tr_CEMC_eta .push_back(asinh(CEMC_z / sqrt(CEMC_x * CEMC_x + CEMC_y * CEMC_y)));
-      m_tr_CEMC_phi .push_back(atan2(CEMC_y, CEMC_x));
- 
-      m_tr_CEMC_x .push_back(trkstates->second->get_pos(0));
-      m_tr_CEMC_y .push_back(trkstates->second->get_pos(1));
-      m_tr_CEMC_z .push_back(trkstates->second->get_pos(2));
-      m_tr_CEMC_px .push_back(trkstates->second->get_mom(0));
-      m_tr_CEMC_py .push_back(trkstates->second->get_mom(1));
-      m_tr_CEMC_pz .push_back(trkstates->second->get_mom(2));
-
-    }
-
-      else {
- /*
-      double CEMC_x = trkstates->second->get_pos(0);
-      double CEMC_y = trkstates->second->get_pos(1);
-      double CEMC_z = trkstates->second->get_pos(2);
-      */
- 
-      m_tr_CEMC_eta .push_back(9999.);
-      m_tr_CEMC_phi .push_back(9999.);
-
-      m_tr_CEMC_x .push_back(9999.);
-      m_tr_CEMC_y .push_back(9999.);
-      m_tr_CEMC_z .push_back(9999.);
-      m_tr_CEMC_px .push_back(9999.);
-      m_tr_CEMC_py .push_back(9999.);
-      m_tr_CEMC_pz .push_back(9999.);
-
-    
-         // cout << "CEMC extrapolation " << endl; 
-     }   
-   }
-}
 
 /////////////////////////////////////TOWERS//////////////////////////////////////////
 
