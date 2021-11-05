@@ -19,11 +19,11 @@ void Matching::Loop(){
    
         TFile* fout = new TFile(Form("G4EICDetector_out_test.root"),"RECREATE");
 
-    // TFile* fout = new TFile(Form("G4EICDetector_out_k_1-20GeV.root"),"RECREATE");
+   //  TFile* fout = new TFile(Form("G4EICDetector_out_e_1-5GeV.root"),"RECREATE");
 
  //  TFile *fout = new TFile("Ep_cut_revisited_G4EICDetector_out_hq2_e_5-10GeV.root","RECREATE");
 
-  TH1F *h_dRmin = new TH1F("h_dRmin","dRmin",40,0,4);
+  TH1F *h_dRmin = new TH1F("h_dRmin","dRmin",400,0,4);
         h_dRmin->SetFillColorAlpha(40, 0.35);
         h_dRmin->SetXTitle("dRmin");
         h_dRmin->SetYTitle("Counts");
@@ -74,7 +74,7 @@ void Matching::Loop(){
 
   TH1F *h_EMCal_Ep = new TH1F("h_EMCal_Ep","EMCal E/track_p",200,0,2);
         h_EMCal_Ep->SetFillColorAlpha(40, 0.35);
-        h_EMCal_Ep->SetXTitle("E");
+        h_EMCal_Ep->SetXTitle("E/p");
         h_EMCal_Ep->SetYTitle("Counts");
         h_EMCal_Ep->GetXaxis()->CenterTitle(true);
         h_EMCal_Ep->GetYaxis()->CenterTitle(true);
@@ -112,14 +112,7 @@ void Matching::Loop(){
         h_dRmin_tow->GetYaxis()->CenterTitle(true);
         h_dRmin_tow->GetYaxis()->SetTitleOffset(1.2);    
 
-  TH1F *h_dRmin_th = new TH1F("h_dRmin_th","dRmin",200,0,0.2);
-        h_dRmin_th->SetFillColorAlpha(40, 0.35);
-        h_dRmin_th->SetXTitle("dRmin");
-        h_dRmin_th->SetYTitle("Counts");
-        h_dRmin_th->GetXaxis()->CenterTitle(true);
-        h_dRmin_th->GetYaxis()->CenterTitle(true);
-        h_dRmin_th->GetYaxis()->SetTitleOffset(1.2);     
-       
+         
   TH2D *h_truth_p_track_p  = new TH2D("track_truth_p","track_p vs truth_p",100,0,20,100,0,20);
         h_truth_p_track_p->SetXTitle("track_p (GeV)");
         h_truth_p_track_p->SetYTitle("truth_p (GeV)");      
@@ -139,7 +132,6 @@ void Matching::Loop(){
        m_eventCounter++;
 
        if(track_p->empty()) continue;
-       if(track_pt->empty()) continue;
        if(clus_energy->empty()) continue;
        if(towenergy->empty()) continue;
        if (track_eta->empty()) continue;
@@ -147,10 +139,9 @@ void Matching::Loop(){
        if (truth_eta->empty()) continue;
 
        //Tracks loop
-       for (int j = 0; j < track_pt->size(); ++j){
+       for (int j = 0; j < track_p->size(); ++j){
 
-      //  if(track_eta->at(j)>1.1 || track_eta->at(j)<-1.5) continue; //cut pseudorapidity for low q2
-        if(abs(track_eta->at(j))>1.0) continue; //cut pseudorapidity for high q2
+        if(abs(track_eta->at(j))>1.0) continue; //cut pseudorapidity 
          //  cout << "track eta:  " << track_eta->at(j)<< endl;
         
            if(abs(track_p->at(j))<0.1) continue;
@@ -161,30 +152,32 @@ void Matching::Loop(){
          // dR and resolutions
          int idx_dR, idx_dEta, idx_dPhi, dummy, idx_dR_tow, idx_dR_track;
         
-          if (tr_CEMC_eta->at(j)==9999.) continue;
+        if (tr_CEMC_eta->at(j)==9999.) continue;
 
-         if (track_id->at(j)!=11) continue; //Turn on for electrons
-        //  if (track_id->at(j)!=-211) continue; //Turn on for pions
-        //   if (track_id->at(j)!=-321) continue; //Turn on for kaons
+          
+           if (track_id->at(j)!=11) continue; //Turn on for electrons
+        // if (track_id->at(j)!=-211) continue; //Turn on for pions
+        //  if (track_id->at(j)!=-321) continue; //Turn on for kaons
 
-          // if (truth_pid->at(j)!=11) continue; //Turn on for electrons
+       //   if ( track_id->at(j)!=11 && track_id->at(j)!=-211 && track_id->at(j)!=-321 ) continue;     
 
- 
-        //   cout << "truth id:  " << truth_pid->at(j) << endl;
-           cout << "track id:  " << track_id->at(j) << endl;
+         // cout << "truth id:  " << truth_pid->at(j) << endl;
+           cout << "pid:  " << track_id->at(j) << endl;
 
         h_truth_p_track_p->Fill(track_p->at(j),truth_p->at(j));       
 
-        if( dRmin(tr_CEMC_eta->at(j), tr_CEMC_phi->at(j), idx_dR) >0.1) continue; //dR cut clusters_tracks
-      //  cout << "dR:  " << dRmin(tr_CEMC_eta->at(j), tr_CEMC_phi->at(j), idx_dR) << endl;
-       //   cout << "track id:  " << track_id->at(j) << endl;
-
          idx_dR  =0;
          h_dRmin->Fill( dRmin(tr_CEMC_eta->at(j), tr_CEMC_phi->at(j), idx_dR) ); //Tracks-clusters
-       //  cout << "idx_dR:  " << idx_dR << endl;
-        // h_dRmin_th->Fill( dRmin_th(track_eta->at(j), track_phi->at(j),idx_dR_track) ); //Truth-tracks
-           //  cout << "dR:  " << dRmin(tr_CEMC_eta->at(j), tr_CEMC_phi->at(j), idx_dR) << endl;
-   
+    
+
+        if( dRmin(tr_CEMC_eta->at(j), tr_CEMC_phi->at(j), idx_dR) > 0.1) continue; //dR cut clusters_tracks
+      //  cout << "dR:  " << dRmin(tr_CEMC_eta->at(j), tr_CEMC_phi->at(j), idx_dR) << endl;
+
+                   cout << "pid:  " << track_id->at(j) << endl;
+
+       //  idx_dR  =0;
+       //  h_dRmin->Fill( dRmin(tr_CEMC_eta->at(j), tr_CEMC_phi->at(j), idx_dR) ); //Tracks-clusters
+     
          float scaleE = 0.8;
          float Ep0 = clus_energy->at(idx_dR)/track_p->at(j);
          float Ep = Ep0/scaleE;
@@ -233,7 +226,6 @@ h_towclus_E->Write();
 
 h_dRmin->Write();
 h_dRmin_tow->Write();
-h_dRmin_th->Write();
 h_track_p->Write();
 h_track_pt->Write();
 h_track_eta->Write();
@@ -273,26 +265,6 @@ h_truth_p_track_p->Write();
 
    return dr;
    }   
-
-      ///////////////////////////
-   float Matching::dRmin_th(float Eta1, float Phi1, int &index){
-     float dRmin = 99;
-
-     if(truth_pt->empty()) return dRmin;
-     for (int j = 0; j < truth_pt->size(); ++j){
-       // cout << "truth pt size:  " << truth_pt->size() << endl;
-
-       float dr = dR( Eta1,  Phi1, truth_eta->at(j), truth_phi->at(j) );
-
-       if(dr < dRmin){
-         dRmin = dr;
-         index = j;
-      } 
-   }
- 
-   return dRmin;
-   }
-   ///////////////////////////
 
    float Matching::dRmin(float Eta1, float Phi1, int &index){
      float dRmin = 99;
