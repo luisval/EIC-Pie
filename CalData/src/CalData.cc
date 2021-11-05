@@ -546,11 +546,16 @@ m_towphi.clear();
     m_truthpid .push_back(truth->get_pid());   
    
 /////////////
+
+bool becal_projection = false;
+
    for (SvtxTrack::ConstStateIter trkstates = track->begin_states(); trkstates != track->end_states(); ++trkstates){
        
-        cout << "trkstates: " << trkstates->second->get_name() << endl;
+       // cout << "trkstates: " << trkstates->second->get_name() << endl;
    
       if(trkstates->second->get_name() == "BECAL"){
+
+       becal_projection = true;
  
       double CEMC_x = trkstates->second->get_mom(0);
       double CEMC_y = trkstates->second->get_mom(1);
@@ -569,7 +574,10 @@ m_towphi.clear();
 
     }
 
-      else {
+     
+   }
+
+    if(becal_projection == false) {
  /*
       double CEMC_x = trkstates->second->get_pos(0);
       double CEMC_y = trkstates->second->get_pos(1);
@@ -588,7 +596,6 @@ m_towphi.clear();
     
          // cout << "CEMC extrapolation " << endl; 
      }   
-   }
 
 /////////////////
 
